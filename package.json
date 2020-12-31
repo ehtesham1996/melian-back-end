@@ -29,6 +29,7 @@
     "@nestjs/swagger": "^4.7.3",
     "apollo-server-express": "^2.19.1",
     "aws-lambda": "^1.0.6",
+    "aws-sdk": "^2.819.0",
     "aws-serverless-express": "^3.3.8",
     "class-validator": "^0.12.2",
     "express": "^4.17.1",

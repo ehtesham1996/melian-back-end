@@ -61,6 +61,7 @@ type LoginOutput {
 
 type Mutation {
   createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
+  getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): LoginOutput!
   removeHobby(id: Int!): Hobby!
   signup(User: CreateUserInput!): User!
@@ -80,6 +81,11 @@ scalar PhoneNumber
 type Query {
   hobby(id: Int!): Hobby!
   profile: User!
+}
+
+type SignedUrlResponse {
+  signedRequest: String!
+  url: String!
 }
 
 input UpdateHobbyInput {
