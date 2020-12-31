@@ -42,6 +42,7 @@ export class UserService {
 
   async findById(id: Types.ObjectId) {
     const user = await this.userModel.findById(id);
+    user.professionalAccountExist = user.professional ? true : false;
     return user;
   }
 
