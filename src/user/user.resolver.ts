@@ -6,7 +6,6 @@ import { LoginInput, LoginOutput } from './dto/login-user.input';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SignedUrlResponse } from './types/signed-url-response.type';
-import { S3 } from 'aws-sdk';
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) { }
@@ -32,27 +31,7 @@ export class UserResolver {
     @Args('filename') filename: string,
     @Args('filetype') filetype: string
   ): Promise<SignedUrlResponse> {
-
-    const s3 = new S3({
-      signatureVersion: 'v4',
-      region: 'us-east-2',
-    });
-
-    const s3Params = {
-      Bucket: process.env.S3_BUCKET || 'com.serverless.hazree.deploys',
-      Key: filename,
-      Expires: 60,
-      ContentType: filetype,
-      ACL: 'public-read',
-    };
-
-    const signedRequest = await s3.getSignedUrl('putObject', s3Params);
-    const url = `https://${process.env.S3_BUCKET ||  'com.serverless.hazree.deploys' }.s3.amazonaws.com/${filename}`;
-
-    return {
-      signedRequest,
-      url
-    };
+    return await this.userService.getProfileImageUploadUrl(filename, filetype);
   }
   // @Query(() => [User], { name: 'user' })
   // findAll() {

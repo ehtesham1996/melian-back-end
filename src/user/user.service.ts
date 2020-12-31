@@ -6,6 +6,9 @@ import { LoginInput, LoginOutput } from './dto/login-user.input';
 import { User, UserDocument } from './models/user.model';
 import { sign } from 'jsonwebtoken'
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
+import { SignedUrlResponse } from './types/signed-url-response.type';
+import { S3 } from 'aws-sdk';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -32,12 +35,10 @@ export class UserService {
       success: true,
       token
     }
-
-
   }
 
   createToken({ _id }: UserDocument) {
-      return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
+    return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
   }
 
   async findById(id: Types.ObjectId) {
@@ -46,6 +47,28 @@ export class UserService {
     return user;
   }
 
+  async getProfileImageUploadUrl(filename: string, filetype: string) : Promise<SignedUrlResponse> {
+    const s3 = new S3({
+      signatureVersion: 'v4',
+      region: 'eu-west-2',
+    });
+
+    const s3Params = {
+      Bucket: process.env.S3_BUCKET,
+      Key: filename,
+      Expires: 60,
+      ContentType: filetype,
+      ACL: 'public-read'
+    };
+
+    const signedRequest = await s3.getSignedUrl('putObject', s3Params);
+    const url = `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${filename}`;
+
+    return {
+      signedRequest,
+      url
+    };
+  }
   // findAll() {
   //   return `This action returns all user`;
   // }
