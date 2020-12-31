@@ -21,14 +21,23 @@ export class UserService {
 
   async login(LoginInput: LoginInput) {
     try {
-    const user = this.userModel.find({ phone: LoginInput.phone });
+      console.log(LoginInput)
+    const user = await this.userModel.findOne({ phone: LoginInput.phone }).exec();
     if (user) {
+      const isVerified = user.verifyPasswordSync(LoginInput.password);
       console.log(user)
     } else {
       console.log("user not found");
     }
+
+    return {
+      success: true
+    }
     } catch (error) {
       console.log(error);
+      return {
+        success: true
+      }
     }
   }
 
