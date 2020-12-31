@@ -7,12 +7,17 @@ import * as express from 'express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from './app.module';
 import 'swagger-ui-express';
 import 'source-map';
+import { AppModule } from './app/app.module';
 
 let cachedServer: Server;
 
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+}
+bootstrap();
 
 function setupSwagger(app: INestApplication){
   const options = new DocumentBuilder()
@@ -34,18 +39,18 @@ const bootstrapServer = async (): Promise<Server> => {
   return awsServerlessExpress.createServer(expressApp);
 }
 
-export const handler: APIGatewayProxyHandler = async (event, context) => {
-  if (event.path === '/docs') {
-    // eslint-disable-next-line no-param-reassign
-    event.path = '/docs/';
-  }
-  // eslint-disable-next-line no-param-reassign
-  event.path = event.path.includes('swagger-ui') ? `/docs${event.path}` : event.path;
+// export const handler: APIGatewayProxyHandler = async (event, context) => {
+//   if (event.path === '/docs') {
+//     // eslint-disable-next-line no-param-reassign
+//     event.path = '/docs/';
+//   }
+//   // eslint-disable-next-line no-param-reassign
+//   event.path = event.path.includes('swagger-ui') ? `/docs${event.path}` : event.path;
 
-  if (!cachedServer) {
-    cachedServer = await bootstrapServer()
-  }
+//   if (!cachedServer) {
+//     cachedServer = await bootstrapServer()
+//   }
 
-  return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE')
-    .promise;
-};
+//   return awsServerlessExpress.proxy(cachedServer, event, context, 'PROMISE')
+//     .promise;
+// };
