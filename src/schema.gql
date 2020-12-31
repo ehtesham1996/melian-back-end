@@ -56,6 +56,7 @@ input LoginInput {
 
 type LoginOutput {
   success: Boolean!
+  token: String!
 }
 
 type Mutation {
@@ -78,6 +79,7 @@ scalar PhoneNumber
 
 type Query {
   hobby(id: Int!): Hobby!
+  profile: User!
 }
 
 input UpdateHobbyInput {

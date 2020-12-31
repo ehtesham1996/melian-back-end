@@ -4,7 +4,7 @@ import { PasswordType } from '../types/password.type';
 
 @InputType()
 export class LoginInput {
-  
+
     @Field(() => PhoneNumberResolver)
     phone: string;
 
@@ -14,7 +14,10 @@ export class LoginInput {
 
 @ObjectType()
 export class LoginOutput {
-  
+
     @Field(() => Boolean)
     success: boolean;
+
+    @Field(() => String)
+    token: string
 }

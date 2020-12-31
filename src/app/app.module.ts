@@ -22,7 +22,12 @@ import { AppService } from './app.service';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
-      debug: false
+      debug: false,
+      context: ({ req }) => ({ headers: req.headers }),
+      formatError: (err) => {
+        return { message: err.message, code: err.extensions?.exception?.status || 500 };
+
+      }
     }),
     HobbyModule,
     UserModule
@@ -30,4 +35,4 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {}
+export class AppModule { }

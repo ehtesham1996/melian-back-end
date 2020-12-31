@@ -28,7 +28,7 @@ export class User extends Document{
 
   @Prop()
   @Field(() => DateResolver)
-  birthDate: string;
+  birthDate: Date;
 
   @Prop()
   @Field(() => URLResolver)

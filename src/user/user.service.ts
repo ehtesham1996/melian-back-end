@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateUserInput } from './dto/create-user.input';
-import { LoginInput } from './dto/login-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
+import { LoginInput, LoginOutput } from './dto/login-user.input';
 import { User, UserDocument } from './models/user.model';
-
+import { sign } from 'jsonwebtoken'
+import { AuthenticationError, UserInputError } from 'apollo-server-express';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>
-  ) {}
+  ) { }
 
   async create(createUserInput: CreateUserInput) {
     const createdUser = new this.userModel(createUserInput);
@@ -19,34 +19,34 @@ export class UserService {
     return createdUser;
   }
 
-  async login(LoginInput: LoginInput) {
-    try {
-      console.log(LoginInput)
+  async login(LoginInput: LoginInput): Promise<LoginOutput> {
+    console.log(LoginInput)
     const user = await this.userModel.findOne({ phone: LoginInput.phone }).exec();
-    if (user) {
-      const isVerified = user.verifyPasswordSync(LoginInput.password);
-      console.log(user)
-    } else {
-      console.log("user not found");
+    if (!user) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
+
+    const isVerified = user.verifyPasswordSync(LoginInput.password);
+    if (!isVerified) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
+
+    const token = this.createToken(user);
+    return {
+      success: true,
+      token
     }
 
-    return {
-      success: true
-    }
-    } catch (error) {
-      console.log(error);
-      return {
-        success: true
-      }
-    }
+
+  }
+
+  createToken({ _id }: UserDocument) {
+      return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
+  }
+
+  async findById(id: Types.ObjectId) {
+    const user = await this.userModel.findById(id);
+    return user;
   }
 
   // findAll() {
   //   return `This action returns all user`;
-  // }
-
-  // findOne(id: Types.ObjectId) {
-  //   return `This action returns a #${id} user`;
   // }
 
   // update(id: Types.ObjectId, updateUserInput: UpdateUserInput) {
