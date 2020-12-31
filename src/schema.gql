@@ -49,10 +49,20 @@ type Hobby {
   name: String!
 }
 
+input LoginInput {
+  password: PasswordType!
+  phone: PhoneNumber!
+}
+
+type LoginOutput {
+  success: Boolean!
+}
+
 type Mutation {
   createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
-  createUser(createUserInput: CreateUserInput!): User!
+  login(User: LoginInput!): LoginOutput!
   removeHobby(id: Int!): Hobby!
+  signup(User: CreateUserInput!): User!
   updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
 }
 
@@ -68,7 +78,6 @@ scalar PhoneNumber
 
 type Query {
   hobby(id: Int!): Hobby!
-  user(id: Int!): User!
 }
 
 input UpdateHobbyInput {
@@ -82,9 +91,19 @@ A field whose value conforms to the standard URL format as specified in RFC3986:
 scalar URL
 
 type User {
+  birthDate: Date!
+  confidentialityAcceptance: Boolean!
+  country: String!
   email: String!
 
   """user firstName"""
   firstName: String!
+  gender: GENDER!
+  identityDocument: String!
   lastName: String!
+  phone: PhoneNumber!
+  professional: String!
+  professionalAccountExist: Boolean!
+  profileImage: URL!
+  termAcceptance: Boolean!
 }

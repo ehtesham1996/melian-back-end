@@ -1,28 +1,32 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
-import { Types } from 'mongoose';
+import { LoginInput, LoginOutput } from './dto/login-user.input';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation(() => User)
-  async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    console.log(createUserInput)
+  async signup(@Args('User') createUserInput: CreateUserInput) {
     return await this.userService.create(createUserInput);
   }
 
-  @Query(() => [User], { name: 'user' })
-  findAll() {
-    return this.userService.findAll();
+  @Mutation(() => LoginOutput)
+  async login(@Args('User') loginInput: LoginInput) {
+    return await this.userService.login(loginInput);
   }
 
-  @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => Int }) id: Types.ObjectId) {
-    return this.userService.findOne(id);
-  }
+  // @Query(() => [User], { name: 'user' })
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
+
+  // @Query(() => User, { name: 'user' })
+  // findOne(@Args('id', { type: () => Int }) id: Types.ObjectId) {
+  //   return this.userService.findOne(id);
+  // }
 
   // @Mutation(() => User)
   // updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {

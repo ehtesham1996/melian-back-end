@@ -1,9 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { EmailAddressResolver, DateResolver, URLResolver, PhoneNumberResolver, RegularExpression } from 'graphql-scalars';
-import { GENDER } from '../enums/gender.enum';
-
-const PasswordType = new RegularExpression('PasswordType', /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);
-
+import { GENDER } from '../types/gender.enum';
+import { PasswordType } from '../types/password.type';
 @InputType()
 export class CreateUserInput {
   @Field(() => String, { description: 'user firstName' })

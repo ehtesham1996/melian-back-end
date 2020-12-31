@@ -1,7 +1,7 @@
 import { CreateUserInput } from './create-user.input';
 import { InputType, Field, PartialType, ID } from '@nestjs/graphql';
 import { EmailAddressResolver, DateResolver, URLResolver, PhoneNumberResolver, RegularExpression } from 'graphql-scalars';
-import { GENDER } from '../enums/gender.enum';
+import { GENDER } from '../types/gender.enum';
 import { Types } from 'mongoose';
 
 const PasswordType = new RegularExpression('PasswordType', /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/);

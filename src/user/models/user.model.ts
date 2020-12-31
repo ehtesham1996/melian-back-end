@@ -1,75 +1,75 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { ObjectType, Field, HideField } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-
+import { Document } from 'mongoose';
+import { GENDER } from '../types/gender.enum';
+import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
+import { Verify } from 'crypto';
 @ObjectType()
-@Schema({autoIndex: true})
+@Schema({
+  timestamps: true
+})
 export class User extends Document{
 
-  @IsNotEmpty()
   @Prop({ required: true, index: true })
   @Field(() => String, { description: 'user firstName' })
   firstName: string;
 
-  @IsNotEmpty()
   @Prop({ required: true })
   @Field(() => String)
   lastName: string;
 
-  @IsEmail()
-  @Prop({ required: true })
+  @Prop({ required: true, index: true, unique: true })
   @Field(() => String)
   email: string;
 
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop()
+  @Field(() => GENDER)
+  gender: GENDER;
 
-  // @IsEmail()
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop()
+  @Field(() => DateResolver)
+  birthDate: string;
 
-  // @IsEmail()
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop()
+  @Field(() => URLResolver)
+  profileImage: string;
 
-  // @IsEmail()
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop()
+  @Field(() => String)
+  country: string;
 
-  // @IsEmail()
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop({ required: true, index: true, unique: true })
+  @Field(() => PhoneNumberResolver)
+  phone: string;
 
-  // @IsEmail()
-  // @Prop({ required: true })
-  // @Field(() => String)
-  // email: string;
+  @Prop()
+  @Field(() => String)
+  identityDocument: string;
+
+  @Prop()
+  @HideField()
+  password: string;
+
+  @Prop()
+  @Field(() => Boolean)
+  termAcceptance: boolean
+
+  @Prop()
+  @Field(() => Boolean)
+  confidentialityAcceptance: boolean
+
+  @Prop({
+    nullable: true
+  })
+  @Field(() => String)
+  professional?: string;
+
+  @Field(() => Boolean)
+  professionalAccountExist?: boolean;
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & { verifyPasswordSync: Function };
 
-const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass<UserDocument>(User);
 
-  // create this manually for now
-  UserSchema.index({
-    firstName: 1,
-    email: 1,
-},{
-    unique: true,
-});
-
-UserSchema.on('index', function(err) {
-  if (err) {
-      console.error('User index error: %s', err);
-  } else {
-      console.info('User indexing complete');
-  }
-});
-
-export default UserSchema;
+UserSchema.plugin(require('mongoose-bcrypt'));
