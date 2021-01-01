@@ -1,9 +1,9 @@
-import { ObjectType, Field, HideField } from '@nestjs/graphql';
+import { ObjectType, Field, HideField, Int } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
-import { Verify } from 'crypto';
+import { WorkPlaces, WorkplacesSchema } from '../dto/workplaces-professional.input';
 @ObjectType()
 @Schema({
   timestamps: true
@@ -77,6 +77,13 @@ export class User extends Document{
     default: false
   })
   isPhoneVerified: boolean;
+
+  @Prop({
+    type: [WorkplacesSchema],
+    default: []
+  })
+  @Field(() => [WorkPlaces])
+  workplaces: [WorkPlaces];
 }
 
 export type UserDocument = User & Document & { verifyPasswordSync: Function };

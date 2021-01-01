@@ -7,8 +7,9 @@ import { User, UserDocument } from './models/user.model';
 import { sign } from 'jsonwebtoken'
 import { SignedUrlResponse } from './types/signed-url-response.type';
 import { S3 } from 'aws-sdk';
-import { ResponseTokenTemplate } from './dto/response-template.response';
+import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { SendMobileNotificationService } from 'src/notification/send-mobile-notification/send-mobile-notification.service';
+import { WorkPlaces } from './dto/workplaces-professional.input';
 @Injectable()
 export class UserService {
   constructor(
@@ -132,15 +133,53 @@ export class UserService {
       url
     };
   }
-  // findAll() {
-  //   return `This action returns all user`;
-  // }
+  
+  async addWorkplace(user: User, workplace: WorkPlaces): Promise<WorkPlaces> {
+    const { name, address, zipCode, country, city } = workplace;
+    if (!name || !address || !zipCode || !country || !city) {
+      const error = `Invalid input: ${!name? 'name, ' : ''},${!address? 'address, ' : ''},${!zipCode? 'zipCode, ' : ''},${!country? 'country, ' : ''},${!city? 'city, ' : ''} is missing from request body`;
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
 
-  // update(id: Types.ObjectId, updateUserInput: UpdateUserInput) {
-  //   return `This action updates a #${id} user`;
-  // }
+    user.workplaces ? user.workplaces.push(workplace) : user.workplaces = [workplace];
+    console.log(workplace)
+    await user.save();
+    return workplace;
+  }
 
-  // remove(id: Types.ObjectId) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async updateWorkplace(user, workplace): Promise<WorkPlaces> {
+    const { _id, name, address, zipCode, country, city } = workplace;
+    if (!name || !address || !zipCode || !country || !city) {
+      const error = `Invalid input: ${!_id? '_id, ' : ''},${!name? 'name, ' : ''},${!address? 'address, ' : ''},${!zipCode? 'zipCode, ' : ''},${!country? 'country, ' : ''},${!city? 'city, ' : ''} is missing from request body`;
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+
+    let workplaceIndex = user.workplaces.findIndex(workplace => workplace._id.toString() === _id);
+    if (workplaceIndex < 0) {
+      throw new HttpException(`Invalid input, ID:${_id} is not valid`, HttpStatus.BAD_REQUEST);
+    }
+    user.workplaces[workplaceIndex] = workplace;
+    await user.save();
+    return workplace;
+  }
+
+  async removeWorkplace(workplaceId, user): Promise<ResponseTemplate> {
+    if (!workplaceId) {
+      const error = `Invalid input: workplaceId is requried`;
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+
+    let workplaceIndex = user.workplaces.findIndex(workplace => workplace._id.toString() === workplaceId);
+    if (workplaceIndex < 0) {
+      throw new HttpException(`Invalid input, ID:${workplaceId} is not valid`, HttpStatus.BAD_REQUEST);
+    }
+    const workplace = user.workplaces[workplaceId];
+    user.workplaces.splice(workplaceIndex, 1);
+    await user.save();
+    console.log(workplace);
+    return {
+      success: true,
+      message: "Wokrplace deleted successfully"
+    };
+  }
 }

@@ -55,13 +55,16 @@ input LoginInput {
 }
 
 type Mutation {
+  addWorkplaces(Workplace: WorkplacesInput!): WorkplacesType!
   createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   removeHobby(id: Int!): Hobby!
+  removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
+  updateWorkplace(Workplace: WorkplacesInput!): WorkplacesType!
   verifyOTP(otp: Float!): ResponseTokenTemplate!
 }
 
@@ -78,6 +81,7 @@ scalar PhoneNumber
 type Query {
   hobby(id: Int!): Hobby!
   profile: User!
+  workplaces: [WorkplacesType!]!
 }
 
 type ResponseTemplate {
@@ -122,4 +126,23 @@ type User {
   professionalAccountExist: Boolean!
   profileImage: URL!
   termAcceptance: Boolean!
+  workplaces: [WorkplacesType!]!
+}
+
+input WorkplacesInput {
+  _id: ID
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
+}
+
+type WorkplacesType {
+  _id: ID
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
 }

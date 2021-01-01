@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { EmailAddressResolver, DateResolver, URLResolver, PhoneNumberResolver, RegularExpression } from 'graphql-scalars';
+import { EmailAddressResolver, DateResolver, URLResolver, PhoneNumberResolver } from 'graphql-scalars';
 import { GENDER } from '../types/gender.enum';
 import { PasswordType } from '../types/password.type';
 @InputType()

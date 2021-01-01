@@ -8,6 +8,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { SignedUrlResponse } from './types/signed-url-response.type';
 import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { VerifyOTPGuard } from 'src/auth/verify-otp.guard';
+import { WorkPlaces } from './dto/workplaces-professional.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -21,12 +22,6 @@ export class UserResolver {
   @Mutation(() => ResponseTokenTemplate)
   async login(@Args('User') loginInput: LoginInput) {
     return await this.userService.login(loginInput);
-  }
-
-  @Query(() => User)
-  @UseGuards(AuthGuard)
-  profile(@Context('user') user: User) {
-    return user;
   }
 
   @Mutation(() => ResponseTemplate)
@@ -48,24 +43,35 @@ export class UserResolver {
   ): Promise<SignedUrlResponse> {
     return await this.userService.getProfileImageUploadUrl(filename, filetype);
   }
-  // @Query(() => [User], { name: 'user' })
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
 
-  // @Query(() => User, { name: 'user' })
-  // findOne(@Args('id', { type: () => Int }) id: Types.ObjectId) {
-  //   return this.userService.findOne(id);
-  // }
+  @Mutation(() => WorkPlaces)
+  @UseGuards(AuthGuard)
+  async addWorkplaces(@Args('Workplace') workplace: WorkPlaces, @Context('user') user: User) {
+    return await this.userService.addWorkplace(user, workplace);
+  }
 
-  // @Mutation(() => User)
-  // updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-  //   return this.userService.update(updateUserInput.id, updateUserInput);
-  // }
+  @Mutation(() => WorkPlaces)
+  @UseGuards(AuthGuard)
+  async updateWorkplace(@Args('Workplace') workplace: WorkPlaces, @Context('user') user: User) {
+    return await this.userService.updateWorkplace(user, workplace);
+  }
 
-  // @Mutation(() => User)
-  // removeUser(@Args('id', { type: () => Int }) id: Types.ObjectId) {
-  //   return this.userService.remove(id);
-  // }
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(AuthGuard)
+  async removeWorkplace(@Args('id') id: string, @Context('user') user: User) {
+    return await this.userService.removeWorkplace(id, user);
+  }
+  
+  @Query(() => User)
+  @UseGuards(AuthGuard)
+  profile(@Context('user') user: User) {
+    return user;
+  }
+
+  @Query(() => [WorkPlaces])
+  @UseGuards(AuthGuard)
+  workplaces(@Context('user') user: User) {
+    return user.workplaces || [];
+  }
 
 }
