@@ -4,7 +4,7 @@ import { verify } from "jsonwebtoken";
 import { UserService } from "src/user/user.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class VerifyOTPGuard implements CanActivate {
     
     constructor(
         private readonly userService: UserService
@@ -18,8 +18,8 @@ export class AuthGuard implements CanActivate {
         }
 
         ctx.user = await this.validateToken(ctx.headers.authorization);
-        if (ctx.user.otp) {
-            throw new HttpException('PLease veryify OTP send to your mobile first', HttpStatus.UNAUTHORIZED);
+        if (!ctx.user.otp) {
+            throw new HttpException('Invalid token or OTP not found', HttpStatus.UNAUTHORIZED);
         }
         
         return true;
@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
 
         const token = auth.split(' ')[1];
         try{ 
-            const decoded : any = await verify(token, process.env.JWT_SECRET || 'secret');
+            const decoded : any = await verify(token, process.env.JWT_SECRET_FOR_OTP || 'secret123');
             const user  = await this.userService.findById(decoded._id);
             return user;
         } catch (error) {

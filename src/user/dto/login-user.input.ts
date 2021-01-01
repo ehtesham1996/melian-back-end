@@ -11,13 +11,3 @@ export class LoginInput {
     @Field(() => PasswordType)
     password: string;
 }
-
-@ObjectType()
-export class LoginOutput {
-
-    @Field(() => Boolean)
-    success: boolean;
-
-    @Field(() => String)
-    token: string
-}

@@ -66,6 +66,17 @@ export class User extends Document{
 
   @Field(() => Boolean)
   professionalAccountExist?: boolean;
+
+  @Prop()
+  otp: number;
+
+  @Prop()
+  otpExpiry: number;
+
+  @Prop({
+    default: false
+  })
+  isPhoneVerified: boolean;
 }
 
 export type UserDocument = User & Document & { verifyPasswordSync: Function };

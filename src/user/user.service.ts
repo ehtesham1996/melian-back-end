@@ -2,43 +2,106 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateUserInput } from './dto/create-user.input';
-import { LoginInput, LoginOutput } from './dto/login-user.input';
+import { LoginInput } from './dto/login-user.input';
 import { User, UserDocument } from './models/user.model';
 import { sign } from 'jsonwebtoken'
-import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { SignedUrlResponse } from './types/signed-url-response.type';
 import { S3 } from 'aws-sdk';
-
+import { ResponseTokenTemplate } from './dto/response-template.response';
+import { SendMobileNotificationService } from 'src/notification/send-mobile-notification/send-mobile-notification.service';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private notification: SendMobileNotificationService
   ) { }
 
   async create(createUserInput: CreateUserInput) {
     const createdUser = new this.userModel(createUserInput);
     await createdUser.save();
-    createdUser.professionalAccountExist = createdUser.professional ? true : false;
-    return createdUser;
+    const token = this.createTokenForOTP(createdUser);
+    return {
+      message: "New user successfully created",
+      success: true,
+      token
+    };
   }
 
-  async login(LoginInput: LoginInput): Promise<LoginOutput> {
-    console.log(LoginInput)
+  async login(LoginInput: LoginInput): Promise<ResponseTokenTemplate> {
     const user = await this.userModel.findOne({ phone: LoginInput.phone }).exec();
     if (!user) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
 
     const isVerified = user.verifyPasswordSync(LoginInput.password);
     if (!isVerified) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
 
-    const token = this.createToken(user);
+    const token = await this.createTokenForOTP(user);
     return {
       success: true,
+      message: "success",
       token
     }
   }
 
-  createToken({ _id }: UserDocument) {
+  createToken({ _id }: User) {
     return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
+  }
+
+  async createTokenForOTP(user: UserDocument) {
+    user.otp = 123456 ||  Math.floor(100000 + Math.random() * 900000);
+    user.otpExpiry = Math.floor(Date.now() + 60000);
+    user.save();
+
+    if (user.otp !== 123456) {
+      const message = `Your Otp for melian app is ${user.otp}, it is valid only for 1 minute`;
+      await this.notification.sendSMSToMobile(user.phone, message);
+    }
+
+    return sign({ _id : user._id }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
+  }
+
+  async resendOTP (user: User) {
+    const { otpExpiry } = user;
+    if (otpExpiry > Date.now()) {
+      return {
+        success: false,
+        message: `Unable to send OTP, please try again after ${ Math.floor((otpExpiry - Date.now()) / 1000) } seconds.`
+      }
+    }
+
+    user.otp = 123456 || Math.floor(100000 + Math.random() * 900000);
+    user.otpExpiry = Math.floor(Date.now() + 60000);
+    user.save(); 
+    
+    if (user.otp !== 123456) {
+      const message = `Your Otp for melian app is ${user.otp}, it is valid only for 1 minute`;
+      await this.notification.sendSMSToMobile(user.phone, message);
+    }
+    return {
+      success: true,
+      message: "OTP sent successfully"
+    }
+  }
+
+  async verifyOTP (user: User, code: number) {
+    const { otp, otpExpiry } = user;
+    if (code !== otp) {
+      throw new HttpException('OTP not matched', HttpStatus.BAD_REQUEST);
+    }
+    if (otpExpiry < Date.now()) {
+      throw new HttpException('OTP expired, please get OTP again from login', HttpStatus.BAD_REQUEST);
+    }
+    
+    user.otp = user.otpExpiry = undefined;
+    user.isPhoneVerified = true;
+
+    await user.save();
+
+    const token = await this.createToken(user);
+    return {
+      success: true,
+      message: "success",
+      token
+    }
   }
 
   async findById(id: Types.ObjectId) {
@@ -50,7 +113,7 @@ export class UserService {
   async getProfileImageUploadUrl(filename: string, filetype: string) : Promise<SignedUrlResponse> {
     const s3 = new S3({
       signatureVersion: 'v4',
-      region: 'eu-west-2',
+      region: process.env.AWS_REGION || 'eu-west-2',
     });
 
     const s3Params = {
@@ -62,7 +125,7 @@ export class UserService {
     };
 
     const signedRequest = await s3.getSignedUrl('putObject', s3Params);
-    const url = `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${filename}`;
+    const url = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${filename}`;
 
     return {
       signedRequest,

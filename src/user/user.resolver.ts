@@ -2,20 +2,23 @@ import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
-import { LoginInput, LoginOutput } from './dto/login-user.input';
+import { LoginInput } from './dto/login-user.input';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { SignedUrlResponse } from './types/signed-url-response.type';
+import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
+import { VerifyOTPGuard } from 'src/auth/verify-otp.guard';
+
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) { }
 
-  @Mutation(() => User)
+  @Mutation(() => ResponseTokenTemplate)
   async signup(@Args('User') createUserInput: CreateUserInput) {
     return await this.userService.create(createUserInput);
   }
 
-  @Mutation(() => LoginOutput)
+  @Mutation(() => ResponseTokenTemplate)
   async login(@Args('User') loginInput: LoginInput) {
     return await this.userService.login(loginInput);
   }
@@ -24,6 +27,18 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   profile(@Context('user') user: User) {
     return user;
+  }
+
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(VerifyOTPGuard)
+  async resendOTP(@Context('user') user: User) {
+    return await this.userService.resendOTP(user);
+  }
+
+  @Mutation(() => ResponseTokenTemplate)
+  @UseGuards(VerifyOTPGuard)
+  async verifyOTP(@Args('otp') otp: number, @Context('user') user: User) {
+    return await this.userService.verifyOTP(user, otp);
   }
 
   @Mutation(() => SignedUrlResponse)

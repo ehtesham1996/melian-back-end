@@ -1,7 +1,5 @@
 import { CreateUserInput } from './create-user.input';
-import { InputType, Field, PartialType } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty } from 'class-validator';
-import { Types } from 'mongoose';
+import { InputType, PartialType } from '@nestjs/graphql';
 
 @InputType()
 export class UpdateUserInput extends PartialType(CreateUserInput) {

@@ -11,6 +11,7 @@ import { AppService } from './app.service';
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/melian', {
       useCreateIndex: true,
+      useFindAndModify: false,
       autoIndex: true
     }),
     GraphQLModule.forRoot({
