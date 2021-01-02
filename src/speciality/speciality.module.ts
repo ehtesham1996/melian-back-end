@@ -10,6 +10,7 @@ import { Speciality, SpecialitySchema } from './entities/speciality.entity';
       { name: Speciality.name, schema: SpecialitySchema }
     ]),
   ],
-  providers: [SpecialityResolver, SpecialityService]
+  providers: [SpecialityResolver, SpecialityService],
+  exports: [SpecialityService]
 })
 export class SpecialityModule {}
