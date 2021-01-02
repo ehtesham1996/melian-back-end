@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Context, Query, Root, ResolveField } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
@@ -84,10 +84,5 @@ export class UserResolver {
     return user.professional.workplaces || [];
   }
 
-  @ResolveField()
-  professional(@Root() user: User) : Professional {
-    console.log('inside professional resolver');
-    return user.professional
-  }
 }
 

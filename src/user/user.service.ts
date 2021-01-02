@@ -190,9 +190,7 @@ export class UserService {
     user.professional = user.professional || {};
 
     if (!credential || !credentialType) {
-      console.log(credential, !credential)
       const error = `Invalid input: ${!credential ? 'credential, ' : ''}${!credentialType ? 'credentialType, ' : ''}is missing from request body`;
-      console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -200,7 +198,7 @@ export class UserService {
     if (credentialType) user.professional.credentialType = credentialType;
 
     if (specialities && specialities.length > 0) {
-      user.professional.specialities = specialities;
+      user.professional.specialities ? user.professional.specialities.push(...specialities) : user.professional.specialities = specialities;
     }
     await user.save();
     return user.professional;
