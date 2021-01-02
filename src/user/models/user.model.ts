@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
-import { Professional, ProfessionalSchema } from './professional.model';
+import { Professional,ProfessionalSchema } from './professional.model';
 @ObjectType()
 @Schema({
   timestamps: true

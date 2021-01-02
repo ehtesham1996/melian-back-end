@@ -84,10 +84,5 @@ export class UserResolver {
     return user.professional.workplaces || [];
   }
 
-  @ResolveField()
-  professional(@Root() user: User) : Professional {
-    console.log('inside professional resolver');
-    return user.professional
-  }
 }
 

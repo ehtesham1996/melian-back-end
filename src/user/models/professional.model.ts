@@ -1,6 +1,6 @@
-import { InputType, Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Schema as sc } from 'mongoose';
 import { Speciality } from 'src/speciality/entities/speciality.entity';
 import { WorkPlacesSchema, WorkPlaces } from './workplaces.model';
 
@@ -23,10 +23,10 @@ export class Professional {
     @Field(() => [WorkPlaces], { nullable: true })
     workplaces?: [WorkPlaces];
 
-    @Prop({
-        type: Types.ObjectId, ref: Speciality.name ,default : []
-    })
-    @Field(() => [Speciality] , {nullable : true})
+    @Prop([{
+        type: sc.Types.ObjectId, ref: Speciality.name, default: []
+    }])
+    @Field(() => [Speciality], { nullable: true })
     specialities?: [String]
 
 }

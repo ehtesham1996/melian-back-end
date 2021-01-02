@@ -11,6 +11,7 @@ import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template
 import { SendMobileNotificationService } from 'src/notification/send-mobile-notification/send-mobile-notification.service';
 import { WorkPlaces } from './models/workplaces.model';
 import { Professional } from './models/professional.model';
+import { ProfessionalInput } from './dto/professional.input';
 @Injectable()
 export class UserService {
   constructor(
@@ -142,7 +143,7 @@ export class UserService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    user.professional = user.professional || {};
+    user.professional = user.professional || {} as Professional;
     user.professional.workplaces ? user.professional.workplaces.push(workplace) : user.professional = { workplaces: [workplace] };
     await user.save();
     return workplace;
@@ -184,10 +185,10 @@ export class UserService {
     };
   }
 
-  async addProfessionalDetail(professional: Professional, user: User): Promise<Professional> {
+  async addProfessionalDetail(professional: ProfessionalInput, user: User): Promise<Professional> {
     const { credentialType, credential, specialities } = professional;
 
-    user.professional = user.professional || {};
+    user.professional = user.professional || {} as Professional;
 
     if (!credential || !credentialType) {
       console.log(credential, !credential)
