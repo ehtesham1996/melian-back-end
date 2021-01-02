@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 import { CreateSpecialityInput } from './dto/create-speciality.input';
 import { UpdateSpecialityInput } from './dto/update-speciality.input';
 import { Speciality } from './entities/speciality.entity';
@@ -18,19 +19,21 @@ export class SpecialityService {
     return speciality
   }
 
-  findAll() {
-    return `This action returns all speciality`;
+  async findAll() {
+    return await this.specialityModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} speciality`;
+  async findOne(id: string) {
+    return await this.specialityModel.findOne({ _id: Types.ObjectId(id) });
   }
 
-  update(id: number, updateSpecialityInput: UpdateSpecialityInput) {
-    return `This action updates a #${id} speciality`;
-  }
+  // update(id: number, updateSpecialityInput: UpdateSpecialityInput) {
+  //   return `This action updates a #${id} speciality`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} speciality`;
+  async remove(id: string) {
+    const speciality = await this.specialityModel.findOne({ _id: Types.ObjectId(id) });
+    await this.specialityModel.remove({ _id: id });
+    return speciality;
   }
 }

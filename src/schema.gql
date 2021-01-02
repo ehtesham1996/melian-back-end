@@ -67,12 +67,11 @@ type Mutation {
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   removeHobby(id: Int!): Hobby!
-  removeSpeciality(id: Int!): Speciality!
+  removeSpeciality(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
-  updateSpeciality(updateSpecialityInput: UpdateSpecialityInput!): Speciality!
   updateWorkplace(Workplace: WorkplacesInput!): WorkplacesType!
   verifyOTP(otp: Float!): ResponseTokenTemplate!
 }
@@ -102,7 +101,7 @@ type ProfessionalType {
 type Query {
   hobby(id: Int!): Hobby!
   profile: User!
-  speciality(id: Int!): Speciality!
+  speciality(id: ID!): Speciality!
   workplaces: [WorkplacesType!]!
 }
 
@@ -132,13 +131,6 @@ type Speciality {
 input UpdateHobbyInput {
   _id: String!
   name: String
-}
-
-input UpdateSpecialityInput {
-  id: Int!
-
-  """speciality name"""
-  name: String!
 }
 
 """

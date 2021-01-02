@@ -1,8 +1,7 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { SpecialityService } from './speciality.service';
 import { Speciality } from './entities/speciality.entity';
 import { CreateSpecialityInput } from './dto/create-speciality.input';
-import { UpdateSpecialityInput } from './dto/update-speciality.input';
 
 @Resolver(() => Speciality)
 export class SpecialityResolver {
@@ -14,22 +13,22 @@ export class SpecialityResolver {
   }
 
   @Query(() => [Speciality], { name: 'speciality' })
-  findAll() {
+  async findAll() {
     return this.specialityService.findAll();
   }
 
   @Query(() => Speciality, { name: 'speciality' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  async findOne(@Args('id', { type: () => ID }) id: string) {
     return this.specialityService.findOne(id);
   }
 
-  @Mutation(() => Speciality)
-  updateSpeciality(@Args('updateSpecialityInput') updateSpecialityInput: UpdateSpecialityInput) {
-    return this.specialityService.update(updateSpecialityInput.id, updateSpecialityInput);
-  }
+  // @Mutation(() => Speciality)
+  // updateSpeciality(@Args('updateSpecialityInput') updateSpecialityInput: UpdateSpecialityInput) {
+  //   return this.specialityService.update(updateSpecialityInput.id, updateSpecialityInput);
+  // }
 
   @Mutation(() => Speciality)
-  removeSpeciality(@Args('id', { type: () => Int }) id: number) {
+  removeSpeciality(@Args('id', { type: () => ID }) id: string) {
     return this.specialityService.remove(id);
   }
 }
