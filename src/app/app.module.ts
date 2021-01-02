@@ -6,6 +6,7 @@ import { UserModule } from '../user/user.module';
 import { HobbyModule } from '../hobby/hobby.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { SpecialityModule } from 'src/speciality/speciality.module';
 // import { UsersModule } from './users/users.module';
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { AppService } from './app.service';
       }
     }),
     HobbyModule,
-    UserModule
+    UserModule,
+    SpecialityModule
   ],
   controllers: [AppController],
   providers: [AppService]

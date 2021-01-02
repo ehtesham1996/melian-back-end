@@ -9,6 +9,7 @@ import { SignedUrlResponse } from './types/signed-url-response.type';
 import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { VerifyOTPGuard } from 'src/auth/verify-otp.guard';
 import { WorkPlaces } from './dto/workplaces-professional.input';
+import { Professional } from './dto/professional.profile.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -62,6 +63,13 @@ export class UserResolver {
     return await this.userService.removeWorkplace(id, user);
   }
   
+  @Mutation(() => Professional)
+  @UseGuards(AuthGuard)
+  async addProfessionalDetail(@Args('professional') professional: Professional, @Context('user') user: User) {
+    return await this.userService.addProfessionalDetail(professional, user);
+  }
+  
+
   @Query(() => User)
   @UseGuards(AuthGuard)
   profile(@Context('user') user: User) {
@@ -71,7 +79,7 @@ export class UserResolver {
   @Query(() => [WorkPlaces])
   @UseGuards(AuthGuard)
   workplaces(@Context('user') user: User) {
-    return user.workplaces || [];
+    return user.professional.workplaces || [];
   }
 
 }

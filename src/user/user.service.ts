@@ -10,6 +10,7 @@ import { S3 } from 'aws-sdk';
 import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { SendMobileNotificationService } from 'src/notification/send-mobile-notification/send-mobile-notification.service';
 import { WorkPlaces } from './dto/workplaces-professional.input';
+import { Professional } from './dto/professional.profile.input';
 @Injectable()
 export class UserService {
   constructor(
@@ -137,12 +138,12 @@ export class UserService {
   async addWorkplace(user: User, workplace: WorkPlaces): Promise<WorkPlaces> {
     const { name, address, zipCode, country, city } = workplace;
     if (!name || !address || !zipCode || !country || !city) {
-      const error = `Invalid input: ${!name? 'name, ' : ''},${!address? 'address, ' : ''},${!zipCode? 'zipCode, ' : ''},${!country? 'country, ' : ''},${!city? 'city, ' : ''} is missing from request body`;
+      const error = `Invalid input: ${!name? 'name, ' : ''}${!address? 'address, ' : ''}${!zipCode? 'zipCode, ' : ''}${!country? 'country, ' : ''}${!city? 'city, ' : ''}is missing from request body`;
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    user.workplaces ? user.workplaces.push(workplace) : user.workplaces = [workplace];
-    console.log(workplace)
+    !user.professional ? user.professional = { } : null;
+    user.professional.workplaces ? user.professional.workplaces.push(workplace) : user.professional = { workplaces: [workplace] };
     await user.save();
     return workplace;
   }
@@ -150,15 +151,15 @@ export class UserService {
   async updateWorkplace(user, workplace): Promise<WorkPlaces> {
     const { _id, name, address, zipCode, country, city } = workplace;
     if (!name || !address || !zipCode || !country || !city) {
-      const error = `Invalid input: ${!_id? '_id, ' : ''},${!name? 'name, ' : ''},${!address? 'address, ' : ''},${!zipCode? 'zipCode, ' : ''},${!country? 'country, ' : ''},${!city? 'city, ' : ''} is missing from request body`;
+      const error = `Invalid input: ${!_id? '_id, ' : ''}${!name? 'name, ' : ''}${!address? 'address, ' : ''}${!zipCode? 'zipCode, ' : ''}${!country? 'country, ' : ''}${!city? 'city, ' : ''}is missing from request body`;
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    let workplaceIndex = user.workplaces.findIndex(workplace => workplace._id.toString() === _id);
+    let workplaceIndex = user.professional.workplaces.findIndex(workplace => workplace._id.toString() === _id);
     if (workplaceIndex < 0) {
       throw new HttpException(`Invalid input, ID:${_id} is not valid`, HttpStatus.BAD_REQUEST);
     }
-    user.workplaces[workplaceIndex] = workplace;
+    user.professional.workplaces[workplaceIndex] = workplace;
     await user.save();
     return workplace;
   }
@@ -169,17 +170,34 @@ export class UserService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    let workplaceIndex = user.workplaces.findIndex(workplace => workplace._id.toString() === workplaceId);
+    let workplaceIndex = user.professional.workplaces.findIndex(workplace => workplace._id.toString() === workplaceId);
     if (workplaceIndex < 0) {
       throw new HttpException(`Invalid input, ID:${workplaceId} is not valid`, HttpStatus.BAD_REQUEST);
     }
-    const workplace = user.workplaces[workplaceId];
-    user.workplaces.splice(workplaceIndex, 1);
+
+    user.professional.workplaces[workplaceId];
+    user.professional.workplaces.splice(workplaceIndex, 1);
     await user.save();
-    console.log(workplace);
     return {
       success: true,
       message: "Wokrplace deleted successfully"
     };
+  }
+
+  async addProfessionalDetail(professional, user): Promise<Professional> {
+    const { credentialType, credential, workplaces } = professional;
+    if (!credential || !credentialType) {
+      console.log(credential, !credential)
+      const error = `Invalid input: ${!credential? 'credential, ' : ''}${!credentialType? 'credentialType, ' : ''}is missing from request body`;
+      console.log(error)
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+
+    user.professional ? user.professional = { credential, credentialType, ...user.professional } : user.professional = { credential, credentialType } ;
+    if (workplaces) {
+      user.professional.workplaces ? user.professional.workplaces = [ ...user.professional.workplaces, ...workplaces ] : user.professional.workplaces = workplaces;
+    }
+    await user.save();
+    return user.professional;
   }
 }

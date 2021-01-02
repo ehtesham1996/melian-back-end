@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
-import { WorkPlaces, WorkplacesSchema } from '../dto/workplaces-professional.input';
+import { Professional, ProfessionalSchema } from '../dto/professional.profile.input';
 @ObjectType()
 @Schema({
   timestamps: true
@@ -58,13 +58,8 @@ export class User extends Document{
   @Field(() => Boolean)
   confidentialityAcceptance: boolean
 
-  @Prop({
-    nullable: true
-  })
-  @Field(() => String)
-  professional?: string;
-
-  @Field(() => Boolean)
+  @Prop()
+  @Field(() => Boolean, { nullable: true })
   professionalAccountExist?: boolean;
 
   @Prop()
@@ -79,11 +74,10 @@ export class User extends Document{
   isPhoneVerified: boolean;
 
   @Prop({
-    type: [WorkplacesSchema],
-    default: []
+    type: ProfessionalSchema
   })
-  @Field(() => [WorkPlaces])
-  workplaces: [WorkPlaces];
+  @Field(() => Professional, { nullable: true })
+  professional?: Professional;
 }
 
 export type UserDocument = User & Document & { verifyPasswordSync: Function };
