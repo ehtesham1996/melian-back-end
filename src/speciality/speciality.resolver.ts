@@ -8,17 +8,17 @@ export class SpecialityResolver {
   constructor(private readonly specialityService: SpecialityService) {}
 
   @Mutation(() => Speciality)
-  async createSpeciality(@Args('createSpecialityInput') createSpecialityInput: CreateSpecialityInput) {
+  async addSpecialityType(@Args('createSpecialityInput') createSpecialityInput: CreateSpecialityInput) {
     return await this.specialityService.create(createSpecialityInput);
   }
 
-  @Query(() => [Speciality], { name: 'speciality' })
-  async findAll() {
+  @Query(() => [Speciality])
+  async specialities() {
     return this.specialityService.findAll();
   }
 
-  @Query(() => Speciality, { name: 'speciality' })
-  async findOne(@Args('id', { type: () => ID }) id: string) {
+  @Query(() => Speciality)
+  async specialityById(@Args('id', { type: () => ID }) id: string) {
     return this.specialityService.findOne(id);
   }
 
@@ -28,7 +28,7 @@ export class SpecialityResolver {
   // }
 
   @Mutation(() => Speciality)
-  removeSpeciality(@Args('id', { type: () => ID }) id: string) {
+  removeSpecialityType(@Args('id', { type: () => ID }) id: string) {
     return this.specialityService.remove(id);
   }
 }

@@ -1,9 +1,8 @@
-import { InputType, Field, ObjectType, ID } from '@nestjs/graphql';
+import { Field, ObjectType, ID } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 
-@InputType("WorkplacesInput")
-@ObjectType("WorkplacesType")
+@ObjectType()
 @Schema()
 export class WorkPlaces {
 
@@ -31,4 +30,4 @@ export class WorkPlaces {
     city: string;
 }
 
-export const WorkplacesSchema = SchemaFactory.createForClass(WorkPlaces);
+export const WorkPlacesSchema = SchemaFactory.createForClass(WorkPlaces);

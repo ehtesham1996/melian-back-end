@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, Query, Root, ResolveField } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
@@ -8,8 +8,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { SignedUrlResponse } from './types/signed-url-response.type';
 import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { VerifyOTPGuard } from 'src/auth/verify-otp.guard';
-import { WorkPlaces } from './dto/workplaces-professional.input';
-import { Professional } from './dto/professional.profile.input';
+import { WorkPlaces } from './models/workplaces.model';
+import { Professional } from './models/professional.model';
+import { WorkPlacesInput, WorkPlaceUpdateInput } from './dto/workplaces.input';
+import { ProfessionalInput } from './dto/professional.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -47,13 +49,13 @@ export class UserResolver {
 
   @Mutation(() => WorkPlaces)
   @UseGuards(AuthGuard)
-  async addWorkplaces(@Args('Workplace') workplace: WorkPlaces, @Context('user') user: User) {
+  async addWorkplaces(@Args('Workplace') workplace: WorkPlacesInput, @Context('user') user: User) {
     return await this.userService.addWorkplace(user, workplace);
   }
 
   @Mutation(() => WorkPlaces)
   @UseGuards(AuthGuard)
-  async updateWorkplace(@Args('Workplace') workplace: WorkPlaces, @Context('user') user: User) {
+  async updateWorkplace(@Args('Workplace') workplace: WorkPlaceUpdateInput, @Context('user') user: User) {
     return await this.userService.updateWorkplace(user, workplace);
   }
 
@@ -62,13 +64,13 @@ export class UserResolver {
   async removeWorkplace(@Args('id') id: string, @Context('user') user: User) {
     return await this.userService.removeWorkplace(id, user);
   }
-  
+
   @Mutation(() => Professional)
   @UseGuards(AuthGuard)
-  async addProfessionalDetail(@Args('professional') professional: Professional, @Context('user') user: User) {
+  async addProfessionalDetail(@Args('professional') professional: ProfessionalInput, @Context('user') user: User) {
     return await this.userService.addProfessionalDetail(professional, user);
   }
-  
+
 
   @Query(() => User)
   @UseGuards(AuthGuard)
@@ -82,4 +84,10 @@ export class UserResolver {
     return user.professional.workplaces || [];
   }
 
+  @ResolveField()
+  professional(@Root() user: User) : Professional {
+    console.log('inside professional resolver');
+    return user.professional
+  }
 }
+

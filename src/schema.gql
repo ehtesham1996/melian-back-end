@@ -60,19 +60,19 @@ input LoginInput {
 }
 
 type Mutation {
-  addProfessionalDetail(professional: ProfessionalInput!): ProfessionalType!
-  addWorkplaces(Workplace: WorkplacesInput!): WorkplacesType!
+  addProfessionalDetail(professional: ProfessionalInput!): Professional!
+  addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
+  addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
   createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
-  createSpeciality(createSpecialityInput: CreateSpecialityInput!): Speciality!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   removeHobby(id: Int!): Hobby!
-  removeSpeciality(id: ID!): Speciality!
+  removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
-  updateWorkplace(Workplace: WorkplacesInput!): WorkplacesType!
+  updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
   verifyOTP(otp: Float!): ResponseTokenTemplate!
 }
 
@@ -86,23 +86,25 @@ A field whose value conforms to the standard E.164 format as specified in: https
 """
 scalar PhoneNumber
 
+type Professional {
+  credential: String
+  credentialType: String
+  specialities: [Speciality!]
+  workplaces: [WorkPlaces!]
+}
+
 input ProfessionalInput {
   credential: String
   credentialType: String
-  workplaces: [WorkplacesInput!]
-}
-
-type ProfessionalType {
-  credential: String
-  credentialType: String
-  workplaces: [WorkplacesType!]
+  specialities: [String!]
 }
 
 type Query {
   hobby(id: Int!): Hobby!
   profile: User!
-  speciality(id: ID!): Speciality!
-  workplaces: [WorkplacesType!]!
+  specialities: [Speciality!]!
+  specialityById(id: ID!): Speciality!
+  workplaces: [WorkPlaces!]!
 }
 
 type ResponseTemplate {
@@ -150,13 +152,13 @@ type User {
   identityDocument: String!
   lastName: String!
   phone: PhoneNumber!
-  professional: ProfessionalType
+  professional: Professional
   professionalAccountExist: Boolean
   profileImage: URL!
   termAcceptance: Boolean!
 }
 
-input WorkplacesInput {
+type WorkPlaces {
   _id: ID
   address: String!
   city: String!
@@ -165,8 +167,16 @@ input WorkplacesInput {
   zipCode: String!
 }
 
-type WorkplacesType {
-  _id: ID
+input WorkPlacesInput {
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
+}
+
+input WorkPlaceUpdateInput {
+  _id: String!
   address: String!
   city: String!
   country: String!

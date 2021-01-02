@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
-import { Professional, ProfessionalSchema } from '../dto/professional.profile.input';
+import { Professional, ProfessionalSchema } from './professional.model';
 @ObjectType()
 @Schema({
   timestamps: true
@@ -58,7 +58,6 @@ export class User extends Document{
   @Field(() => Boolean)
   confidentialityAcceptance: boolean
 
-  @Prop()
   @Field(() => Boolean, { nullable: true })
   professionalAccountExist?: boolean;
 

@@ -9,8 +9,8 @@ import { SignedUrlResponse } from './types/signed-url-response.type';
 import { S3 } from 'aws-sdk';
 import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
 import { SendMobileNotificationService } from 'src/notification/send-mobile-notification/send-mobile-notification.service';
-import { WorkPlaces } from './dto/workplaces-professional.input';
-import { Professional } from './dto/professional.profile.input';
+import { WorkPlaces } from './models/workplaces.model';
+import { Professional } from './models/professional.model';
 @Injectable()
 export class UserService {
   constructor(
@@ -49,7 +49,7 @@ export class UserService {
   }
 
   async createTokenForOTP(user: UserDocument) {
-    user.otp = 123456 ||  Math.floor(100000 + Math.random() * 900000);
+    user.otp = 123456 || Math.floor(100000 + Math.random() * 900000);
     user.otpExpiry = Math.floor(Date.now() + 60000);
     user.save();
 
@@ -58,22 +58,22 @@ export class UserService {
       await this.notification.sendSMSToMobile(user.phone, message);
     }
 
-    return sign({ _id : user._id }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
+    return sign({ _id: user._id }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
   }
 
-  async resendOTP (user: User) {
+  async resendOTP(user: User) {
     const { otpExpiry } = user;
     if (otpExpiry > Date.now()) {
       return {
         success: false,
-        message: `Unable to send OTP, please try again after ${ Math.floor((otpExpiry - Date.now()) / 1000) } seconds.`
+        message: `Unable to send OTP, please try again after ${Math.floor((otpExpiry - Date.now()) / 1000)} seconds.`
       }
     }
 
     user.otp = 123456 || Math.floor(100000 + Math.random() * 900000);
     user.otpExpiry = Math.floor(Date.now() + 60000);
-    user.save(); 
-    
+    user.save();
+
     if (user.otp !== 123456) {
       const message = `Your Otp for melian app is ${user.otp}, it is valid only for 1 minute`;
       await this.notification.sendSMSToMobile(user.phone, message);
@@ -84,7 +84,7 @@ export class UserService {
     }
   }
 
-  async verifyOTP (user: User, code: number) {
+  async verifyOTP(user: User, code: number) {
     const { otp, otpExpiry } = user;
     if (code !== otp) {
       throw new HttpException('OTP not matched', HttpStatus.BAD_REQUEST);
@@ -92,7 +92,7 @@ export class UserService {
     if (otpExpiry < Date.now()) {
       throw new HttpException('OTP expired, please get OTP again from login', HttpStatus.BAD_REQUEST);
     }
-    
+
     user.otp = user.otpExpiry = undefined;
     user.isPhoneVerified = true;
 
@@ -112,7 +112,7 @@ export class UserService {
     return user;
   }
 
-  async getProfileImageUploadUrl(filename: string, filetype: string) : Promise<SignedUrlResponse> {
+  async getProfileImageUploadUrl(filename: string, filetype: string): Promise<SignedUrlResponse> {
     const s3 = new S3({
       signatureVersion: 'v4',
       region: process.env.AWS_REGION || 'eu-west-2',
@@ -134,15 +134,15 @@ export class UserService {
       url
     };
   }
-  
+
   async addWorkplace(user: User, workplace: WorkPlaces): Promise<WorkPlaces> {
     const { name, address, zipCode, country, city } = workplace;
     if (!name || !address || !zipCode || !country || !city) {
-      const error = `Invalid input: ${!name? 'name, ' : ''}${!address? 'address, ' : ''}${!zipCode? 'zipCode, ' : ''}${!country? 'country, ' : ''}${!city? 'city, ' : ''}is missing from request body`;
+      const error = `Invalid input: ${!name ? 'name, ' : ''}${!address ? 'address, ' : ''}${!zipCode ? 'zipCode, ' : ''}${!country ? 'country, ' : ''}${!city ? 'city, ' : ''}is missing from request body`;
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    !user.professional ? user.professional = { } : null;
+    user.professional = user.professional || {};
     user.professional.workplaces ? user.professional.workplaces.push(workplace) : user.professional = { workplaces: [workplace] };
     await user.save();
     return workplace;
@@ -151,7 +151,7 @@ export class UserService {
   async updateWorkplace(user, workplace): Promise<WorkPlaces> {
     const { _id, name, address, zipCode, country, city } = workplace;
     if (!name || !address || !zipCode || !country || !city) {
-      const error = `Invalid input: ${!_id? '_id, ' : ''}${!name? 'name, ' : ''}${!address? 'address, ' : ''}${!zipCode? 'zipCode, ' : ''}${!country? 'country, ' : ''}${!city? 'city, ' : ''}is missing from request body`;
+      const error = `Invalid input: ${!_id ? '_id, ' : ''}${!name ? 'name, ' : ''}${!address ? 'address, ' : ''}${!zipCode ? 'zipCode, ' : ''}${!country ? 'country, ' : ''}${!city ? 'city, ' : ''}is missing from request body`;
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -184,18 +184,23 @@ export class UserService {
     };
   }
 
-  async addProfessionalDetail(professional, user): Promise<Professional> {
-    const { credentialType, credential, workplaces } = professional;
+  async addProfessionalDetail(professional: Professional, user: User): Promise<Professional> {
+    const { credentialType, credential, specialities } = professional;
+
+    user.professional = user.professional || {};
+
     if (!credential || !credentialType) {
       console.log(credential, !credential)
-      const error = `Invalid input: ${!credential? 'credential, ' : ''}${!credentialType? 'credentialType, ' : ''}is missing from request body`;
+      const error = `Invalid input: ${!credential ? 'credential, ' : ''}${!credentialType ? 'credentialType, ' : ''}is missing from request body`;
       console.log(error)
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
 
-    user.professional ? user.professional = { credential, credentialType, ...user.professional } : user.professional = { credential, credentialType } ;
-    if (workplaces) {
-      user.professional.workplaces ? user.professional.workplaces = [ ...user.professional.workplaces, ...workplaces ] : user.professional.workplaces = workplaces;
+    if (credential) user.professional.credential = credential;
+    if (credentialType) user.professional.credentialType = credentialType;
+
+    if (specialities && specialities.length > 0) {
+      user.professional.specialities = specialities;
     }
     await user.save();
     return user.professional;

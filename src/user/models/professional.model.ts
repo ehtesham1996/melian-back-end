@@ -1,9 +1,10 @@
 import { InputType, Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { WorkPlaces, WorkplacesSchema } from './workplaces-professional.input';
+import { Types } from 'mongoose';
+import { Speciality } from 'src/speciality/entities/speciality.entity';
+import { WorkPlacesSchema, WorkPlaces } from './workplaces.model';
 
-@InputType("ProfessionalInput")
-@ObjectType("ProfessionalType")
+@ObjectType()
 @Schema()
 export class Professional {
 
@@ -16,11 +17,18 @@ export class Professional {
     credentialType?: string;
 
     @Prop({
-        type: [WorkplacesSchema],
+        type: [WorkPlacesSchema],
         default: []
     })
     @Field(() => [WorkPlaces], { nullable: true })
     workplaces?: [WorkPlaces];
+
+    @Prop({
+        type: Types.ObjectId, ref: Speciality.name ,default : []
+    })
+    @Field(() => [Speciality] , {nullable : true})
+    specialities?: [String]
+
 }
 
 export const ProfessionalSchema = SchemaFactory.createForClass(Professional);
