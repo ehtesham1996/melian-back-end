@@ -66,10 +66,12 @@ type Mutation {
   createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
+  passwordReset(password: String!): ResponseTemplate!
   removeHobby(id: Int!): Hobby!
   removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
+  sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!

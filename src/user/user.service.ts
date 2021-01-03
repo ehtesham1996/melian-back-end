@@ -62,6 +62,10 @@ export class UserService {
     return sign({ _id: user._id }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
   }
 
+  createTokenForEmailResent({ _id }: User) {
+    return sign({ _id }, process.env.JWT_SECRET_FOR_EMAIL || 'secretEMAIL', { expiresIn: '1d' }) // change secret according to env
+  }
+
   async resendOTP(user: User) {
     const { otpExpiry } = user;
     if (otpExpiry > Date.now()) {
@@ -73,7 +77,7 @@ export class UserService {
 
     user.otp = 123456 || Math.floor(100000 + Math.random() * 900000);
     user.otpExpiry = Math.floor(Date.now() + 60000);
-    user.save();
+    await user.save();
 
     if (user.otp !== 123456) {
       const message = `Your Otp for melian app is ${user.otp}, it is valid only for 1 minute`;
@@ -82,6 +86,40 @@ export class UserService {
     return {
       success: true,
       message: "OTP sent successfully"
+    }
+  }
+
+  async sendPasswordResetLink(user: User, email: string) {
+    const { _id } = user;
+    if (!email) {
+      throw new HttpException('Invalid request, email is required', HttpStatus.BAD_REQUEST);
+    }
+    const token = this.createTokenForEmailResent(_id);
+
+    const message = `
+        <h3>Dear Melian Customer</h3>
+        We have received a request to authorize this email address for use with Melian application. If you requested this verification, please go to the following URL to confirm that you are authorized to use this email address: <br />
+        <a class="ulink" href=http://localhost:3000/user/resetPassword/${token} target="_blank" /><br />
+        Your request will not be processed unless you confirm the address using this URL. This link expires 24 hours after your original verification request.
+    `;
+    console.log(message)
+    // await this.notification.sendEmail([email], message);
+    return {
+      success: true,
+      message: "verification link successfull sent to email address"
+    }
+  }
+
+  async passwordReset(user: User, password: string): Promise<ResponseTemplate> {
+    if (!password) {
+      throw new HttpException('Invalid request, password field is required', HttpStatus.BAD_REQUEST);
+    }
+
+    user.password = password;
+    await user.save();
+    return {
+      success: true,
+      message: "success"
     }
   }
 

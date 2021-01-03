@@ -67,6 +67,12 @@ export class User extends Document{
   @Prop()
   otpExpiry: number;
 
+  @Prop()
+  emailOtp: number;
+
+  @Prop()
+  emailOtpExpiry: number;
+
   @Prop({
     default: false
   })

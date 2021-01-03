@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import * as aws from 'aws-sdk';
-import { exception } from 'console';
 
 @Injectable()
 export class SendMobileNotificationService {
     private sns;
+    private ses;
 
     constructor() {
-        aws.config.update({region: process.env.AWS_REGION || 'eu-west-2'});
-        this.sns = new aws.SNS({apiVersion: '2010-03-31'});
-        // this.setSMSTypeInSNS();
+        aws.config.update({ region: process.env.AWS_REGION || 'us-east-1' });
+        this.sns = new aws.SNS({ apiVersion: '2010-03-31' });
+        this.ses = new aws.SES();
+
+        this.setSMSTypeInSNS();
     }
 
 
-    async setSMSTypeInSNS() { 
+    async setSMSTypeInSNS() {
         const params = {
             attributes: {
-              'DefaultSMSType': 'Transactional'
+                'DefaultSMSType': 'Transactional'
             }
         };
         try {
@@ -42,5 +43,33 @@ export class SendMobileNotificationService {
         }
         console.log(`successfully publist message :)`);
         return true;
+    }
+
+    async sendEmail(to: Array<string>, data: string) {
+
+        const params = {
+            Destination: {
+                ToAddresses: [
+                    ...to
+                ]
+            },
+            Message: {
+                Body: {
+                    Html: {
+                        Charset: "UTF-8",
+                        Data: data
+                    }
+                },
+                Subject: {
+                    Charset: "UTF-8",
+                    Data: "Melian App"
+                }
+            },
+            Source: 'hamzajaved2080@gmail.com'
+        };
+        this.ses.sendEmail(params, function (err, data) {
+            if (err) console.log(err, err.stack);
+            else console.log(data);
+        });
     }
 }

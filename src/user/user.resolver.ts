@@ -12,6 +12,8 @@ import { WorkPlaces } from './models/workplaces.model';
 import { Professional } from './models/professional.model';
 import { WorkPlacesInput, WorkPlaceUpdateInput } from './dto/workplaces.input';
 import { ProfessionalInput } from './dto/professional.input';
+import { VerifyPasswordResetLinkGuard } from 'src/auth/verify-password-reset-link.guard';
+import { ResetPasswordGuard } from 'src/auth/reset-password.guard';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -32,6 +34,19 @@ export class UserResolver {
   async resendOTP(@Context('user') user: User) {
     return await this.userService.resendOTP(user);
   }
+
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(VerifyOTPGuard)
+  async sendPasswordResetLink(@Args('email') email: string, @Context('user') user: User) {
+    return await this.userService.sendPasswordResetLink(user, email);
+  }
+
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(ResetPasswordGuard)
+  async passwordReset(@Args('password') password: string, @Context('user') user: User) {
+    return await this.userService.passwordReset(user, password);
+  }
+
 
   @Mutation(() => ResponseTokenTemplate)
   @UseGuards(VerifyOTPGuard)
