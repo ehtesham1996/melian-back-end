@@ -1,0 +1,49 @@
+service: melian-app
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'prod'}
+  region: ${opt:region, 'us-east-1'}
+  memorySize: 128
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  deploymentBucket:
+    name: com.serverless.melian.deploys # Change with the project name
+    maxPreviousDeploymentArtifacts: 3
+  environment:
+    DEBUG: '*'
+    ENV: ${self:provider.stage}
+  role: arn:aws:iam::096447840871:role/Melian-Lambda-Execution-Role
+
+plugins:
+  - serverless-offline
+  - serverless-webpack
+  - serverless-prune-plugin
+  - serverless-dotenv-plugin
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules:
+      forceExclude:
+        - aws-sdk
+    excludeFiles: '**/*.test.ts' #Excluding test files in the final build
+  prune:
+    automatic: true
+    number: 3
+
+functions:
+  index:
+    handler: ./src/main.handler
+    events:
+    - http:
+        cors: true
+        path: '/'
+        method: any
+    - http:
+        cors: true
+        path: '{proxy+}'
+        method: any
