@@ -36,9 +36,8 @@ export class UserResolver {
   }
 
   @Mutation(() => ResponseTemplate)
-  @UseGuards(VerifyOTPGuard)
-  async sendPasswordResetLink(@Args('email') email: string, @Context('user') user: User) {
-    return await this.userService.sendPasswordResetLink(user, email);
+  async sendPasswordResetLink(@Args('email') email: string) {
+    return await this.userService.sendPasswordResetLink(email);
   }
 
   @Mutation(() => ResponseTemplate)

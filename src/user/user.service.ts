@@ -89,7 +89,8 @@ export class UserService {
     }
   }
 
-  async sendPasswordResetLink(user: User, email: string) {
+  async sendPasswordResetLink(email: string) {
+    const user = await this.userModel.findOne({ email });
     const { _id } = user;
     if (!email) {
       throw new HttpException('Invalid request, email is required', HttpStatus.BAD_REQUEST);
