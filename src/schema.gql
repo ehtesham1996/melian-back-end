@@ -1,0 +1,167 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateSpecialityInput {
+  """speciality name"""
+  name: String!
+}
+
+input CreateUserInput {
+  birthDate: Date!
+  confidentialityAcceptance: Boolean!
+  country: String!
+
+  """user email"""
+  email: EmailAddress!
+
+  """user firstName"""
+  firstName: String!
+  gender: GENDER!
+  identityDocument: String!
+
+  """user lastName"""
+  lastName: String!
+  password: PasswordType!
+  phone: PhoneNumber!
+  profileImage: URL!
+  termAcceptance: Boolean!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.
+"""
+scalar EmailAddress
+
+enum GENDER {
+  female
+  male
+}
+
+input LoginInput {
+  password: PasswordType!
+  phone: PhoneNumber!
+}
+
+type Mutation {
+  addProfessionalDetail(professional: ProfessionalInput!): Professional!
+  addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
+  addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
+  login(User: LoginInput!): ResponseTokenTemplate!
+  passwordReset(password: String!): ResponseTemplate!
+  removeSpecialityType(id: ID!): Speciality!
+  removeWorkplace(id: String!): ResponseTemplate!
+  resendOTP: ResponseTemplate!
+  sendPasswordResetLink(email: String!): ResponseTemplate!
+  signup(User: CreateUserInput!): ResponseTokenTemplate!
+  updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
+  verifyOTP(otp: Float!): ResponseTokenTemplate!
+}
+
+"""
+A field whose value matches the provided regular expression /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.
+"""
+scalar PasswordType
+
+"""
+A field whose value conforms to the standard E.164 format as specified in: https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234.
+"""
+scalar PhoneNumber
+
+type Professional {
+  credential: String
+  credentialType: String
+  specialities: [Speciality!]
+  workplaces: [WorkPlaces!]
+}
+
+input ProfessionalInput {
+  credential: String
+  credentialType: String
+  specialities: [String!]
+}
+
+type Query {
+  profile: User!
+  specialities: [Speciality!]!
+  specialityById(id: ID!): Speciality!
+  workplaces: [WorkPlaces!]!
+}
+
+type ResponseTemplate {
+  message: String!
+  success: Boolean!
+}
+
+type ResponseTokenTemplate {
+  message: String!
+  success: Boolean!
+  token: String!
+}
+
+type SignedUrlResponse {
+  signedRequest: String!
+  url: String!
+}
+
+type Speciality {
+  _id: String!
+
+  """speciality name"""
+  name: String!
+}
+
+"""
+A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
+"""
+scalar URL
+
+type User {
+  birthDate: Date!
+  confidentialityAcceptance: Boolean!
+  country: String!
+  email: String!
+
+  """user firstName"""
+  firstName: String!
+  gender: GENDER!
+  identityDocument: String!
+  lastName: String!
+  phone: PhoneNumber!
+  professional: Professional
+  professionalAccountExist: Boolean
+  profileImage: URL!
+  termAcceptance: Boolean!
+}
+
+type WorkPlaces {
+  _id: String
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
+}
+
+input WorkPlacesInput {
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
+}
+
+input WorkPlaceUpdateInput {
+  _id: String!
+  address: String!
+  city: String!
+  country: String!
+  name: String!
+  zipCode: String!
+}

@@ -1,0 +1,185 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Speciality {
+  _id: String!
+
+  """speciality name"""
+  name: String!
+}
+
+type WorkPlaces {
+  _id: String
+  name: String!
+  address: String!
+  zipCode: String!
+  country: String!
+  city: String!
+}
+
+type Professional {
+  credential: String
+  credentialType: String
+  workplaces: [WorkPlaces!]
+  specialities: [Speciality!]
+}
+
+type User {
+  """user firstName"""
+  firstName: String!
+  lastName: String!
+  email: String!
+  gender: GENDER!
+  birthDate: Date!
+  profileImage: URL!
+  country: String!
+  phone: PhoneNumber!
+  identityDocument: String!
+  termAcceptance: Boolean!
+  confidentialityAcceptance: Boolean!
+  professionalAccountExist: Boolean
+  professional: Professional
+}
+
+enum GENDER {
+  male
+  female
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
+"""
+scalar URL
+
+"""
+A field whose value conforms to the standard E.164 format as specified in: https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234.
+"""
+scalar PhoneNumber
+
+type SignedUrlResponse {
+  signedRequest: String!
+  url: String!
+}
+
+type ResponseTemplate {
+  success: Boolean!
+  message: String!
+}
+
+type ResponseTokenTemplate {
+  success: Boolean!
+  message: String!
+  token: String!
+}
+
+type Hobby {
+  """String id field"""
+  _id: String!
+  name: String!
+}
+
+type Query {
+  hobby(id: Int!): Hobby!
+  profile: User!
+  workplaces: [WorkPlaces!]!
+  specialities: [Speciality!]!
+  specialityById(id: ID!): Speciality!
+}
+
+type Mutation {
+  createHobby(createHobbyInput: CreateHobbyInput!): Hobby!
+  updateHobby(updateHobbyInput: UpdateHobbyInput!): Hobby!
+  removeHobby(id: Int!): Hobby!
+  signup(User: CreateUserInput!): ResponseTokenTemplate!
+  login(User: LoginInput!): ResponseTokenTemplate!
+  resendOTP: ResponseTemplate!
+  sendPasswordResetLink(email: String!): ResponseTemplate!
+  passwordReset(password: String!): ResponseTemplate!
+  verifyOTP(otp: Float!): ResponseTokenTemplate!
+  getSignedUrlForUpload(filetype: String!, filename: String!): SignedUrlResponse!
+  addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
+  removeWorkplace(id: String!): ResponseTemplate!
+  addProfessionalDetail(professional: ProfessionalInput!): Professional!
+  addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
+  removeSpecialityType(id: ID!): Speciality!
+}
+
+input CreateHobbyInput {
+  """name of hobby"""
+  name: String!
+}
+
+input UpdateHobbyInput {
+  name: String
+  _id: String!
+}
+
+input CreateUserInput {
+  """user firstName"""
+  firstName: String!
+
+  """user lastName"""
+  lastName: String!
+
+  """user email"""
+  email: EmailAddress!
+  gender: GENDER!
+  birthDate: Date!
+  profileImage: URL!
+  country: String!
+  phone: PhoneNumber!
+  identityDocument: String!
+  password: PasswordType!
+  termAcceptance: Boolean!
+  confidentialityAcceptance: Boolean!
+}
+
+"""
+A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.
+"""
+scalar EmailAddress
+
+"""
+A field whose value matches the provided regular expression /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.
+"""
+scalar PasswordType
+
+input LoginInput {
+  phone: PhoneNumber!
+  password: PasswordType!
+}
+
+input WorkPlacesInput {
+  name: String!
+  address: String!
+  zipCode: String!
+  country: String!
+  city: String!
+}
+
+input WorkPlaceUpdateInput {
+  name: String!
+  address: String!
+  zipCode: String!
+  country: String!
+  city: String!
+  _id: String!
+}
+
+input ProfessionalInput {
+  credential: String
+  credentialType: String
+  specialities: [String!]
+}
+
+input CreateSpecialityInput {
+  """speciality name"""
+  name: String!
+}

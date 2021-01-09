@@ -14,9 +14,10 @@ phases:
     - npm run test
   build:
     commands:
+    - printenv | grep '^[a-z]' >> .env
     - mkdir -p target/$stage
     - sls --version
-    - serverless package --package target/$stage --stage $stage -v -r us-east-1
+    - serverless package --package target/$stage --stage $stage -v
   post_build:
     commands:
     - rm -rf node_modules
