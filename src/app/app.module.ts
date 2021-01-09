@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SpecialityModule } from '../speciality/speciality.module';
+import { NetworkModule } from '@src/network/network.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -43,6 +44,7 @@ import { SpecialityModule } from '../speciality/speciality.module';
       }
     }),
     UserModule,
+    NetworkModule,
     SpecialityModule
   ],
   controllers: [AppController],

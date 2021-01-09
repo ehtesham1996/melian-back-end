@@ -2,6 +2,23 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateNetworkInput {
+  """firstName of conectee"""
+  accountType: String!
+
+  """connection email"""
+  email: String
+
+  """firstName of conectee"""
+  firstName: String!
+
+  """firstName of conectee"""
+  lastName: String!
+
+  """connection phone"""
+  phone: String!
+}
+
 input CreateSpecialityInput {
   """speciality name"""
   name: String!
@@ -52,16 +69,42 @@ type Mutation {
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  createNetwork(createNetworkInput: CreateNetworkInput!): Network!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
+  removeNetwork(id: Int!): Network!
   removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
   sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
+  updateNetwork(updateNetworkInput: UpdateNetworkInput!): Network!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
   verifyOTP(otp: Float!): ResponseTokenTemplate!
+}
+
+type Network {
+  """firstName of conectee"""
+  accountType: String!
+
+  """whom send connection request"""
+  connectedFrom: ID!
+
+  """connected to ID (whom one send connection request, if found)"""
+  connectedTo: ID
+
+  """connection email"""
+  email: String
+
+  """firstName of conectee"""
+  firstName: String!
+
+  """firstName of conectee"""
+  lastName: String!
+
+  """connection phone"""
+  phone: String!
 }
 
 """
@@ -88,6 +131,7 @@ input ProfessionalInput {
 }
 
 type Query {
+  network(id: Int!): Network!
   profile: User!
   specialities: [Speciality!]!
   specialityById(id: ID!): Speciality!
@@ -115,6 +159,24 @@ type Speciality {
 
   """speciality name"""
   name: String!
+}
+
+input UpdateNetworkInput {
+  """firstName of conectee"""
+  accountType: String
+
+  """connection email"""
+  email: String
+
+  """firstName of conectee"""
+  firstName: String
+  id: Int!
+
+  """firstName of conectee"""
+  lastName: String
+
+  """connection phone"""
+  phone: String
 }
 
 """
