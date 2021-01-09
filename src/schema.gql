@@ -81,7 +81,6 @@ type Mutation {
   resendOTP: ResponseTemplate!
   sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
-  updateNetwork(updateNetworkInput: UpdateNetworkInput!): Network!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
   verifyOTP(otp: Float!): ResponseTokenTemplate!
 }
@@ -166,24 +165,6 @@ type Speciality {
 
   """speciality name"""
   name: String!
-}
-
-input UpdateNetworkInput {
-  """firstName of conectee"""
-  accountType: String
-
-  """connection email"""
-  email: String
-
-  """firstName of conectee"""
-  firstName: String
-  id: Int!
-
-  """firstName of conectee"""
-  lastName: String
-
-  """connection phone"""
-  phone: String
 }
 
 """
