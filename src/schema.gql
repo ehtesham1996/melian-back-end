@@ -81,6 +81,7 @@ type Mutation {
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  deleteInvitation(networkId: String!): Network!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
@@ -98,9 +99,6 @@ type Mutation {
 type Network {
   """unique id of the network type"""
   networkId: String!
-
-  """account type of the receiver"""
-  receiverAccountType: ROLE!
 
   """email of the receiver"""
   receiverEmail: EmailAddress

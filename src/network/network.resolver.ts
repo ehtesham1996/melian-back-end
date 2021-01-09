@@ -1,14 +1,13 @@
 import { Resolver, Query, Mutation, Args, Int, Context, ResolveField, Root } from '@nestjs/graphql';
 import { Network } from './model/network.model';
 import { CreateNetworkInput } from './dto/create-network.input';
-import { UserService } from '../user/user.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { User } from '../user/models/user.model';
 import { NetworkService } from './network.service';
 import { InvitationsFilter } from './dto/invitation-filter.dto';
-import { Sender } from '@src/network/dto/sender.dto';
-import { send } from 'process';
+import { Sender } from '../network/dto/sender.dto';
+import { ResponseTemplate } from '../core/dto/response-template.dto';
 
 @Resolver(() => Network)
 export class NetworkResolver {
@@ -41,6 +40,13 @@ export class NetworkResolver {
       email: sender.email,
       phone: sender.phone
     };
+  }
+
+  @Mutation(() => Network)
+  @UseGuards(AuthGuard)
+  async deleteInvitation(@Context('user') user: User,
+    @Args('networkId') networkId: string): Promise<Network> {
+    return await this.networkService.deleteInvitation(user, networkId);
   }
 
   @Query(() => Network, { name: 'network' })

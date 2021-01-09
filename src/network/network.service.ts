@@ -4,11 +4,12 @@ import { CreateNetworkInput } from './dto/create-network.input';
 import { Network, NetworkDocument } from './model/network.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../user/models/user.model';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { NotificationService } from '../notification/notification.service';
 import { InvitationsFilter } from './dto/invitation-filter.dto';
 import { INVITATION_TYPE } from './types/invitaions-type.enum';
-import { query } from 'express';
+import { ROLE } from '../user/types/user.role.enum';
+import { ResponseTemplate } from '../core/dto/response-template.dto';
 // import { UpdateNetworkInput } from './dto/update-network.input';
 
 @Injectable()
@@ -29,18 +30,18 @@ export class NetworkService {
     console.log('users are', users);
 
     const alreadySent = await this.findOne({
-      sender : sendingUser._id,
-      $or : [
+      sender: sendingUser._id,
+      $or: [
         {
-          receiverPhone : createNetworkInput.phone
+          receiverPhone: createNetworkInput.phone
         },
         {
-          receiverEmail : createNetworkInput.email
+          receiverEmail: createNetworkInput.email
         }
       ]
     }).count();
     console.log(alreadySent);
-    if(alreadySent) throw new HttpException(
+    if (alreadySent) throw new HttpException(
       'Your invitation to this user is already pending',
       HttpStatus.CONFLICT
     );
@@ -69,7 +70,11 @@ export class NetworkService {
       const user = users[0];
       createNetworkInput.phone = user.phone;
       createNetworkInput.email = user.email;
-      return await this.create({ ...createNetworkInput, sender: sendingUser._id });
+      return await this.create({
+        ...createNetworkInput,
+        sender: sendingUser._id,
+        senderAccountType: sendingUser.userRole
+      });
     }
 
     // none receiver account exists against phone and email
@@ -77,19 +82,27 @@ export class NetworkService {
     if (sendingUser.otp !== 123456) {
       this.notificationService.sendSMSToMobile(createNetworkInput.phone, message);
     }
-    return await this.create({ ...createNetworkInput, sender: sendingUser._id });
+    return await this.create({
+      ...createNetworkInput,
+      sender: sendingUser._id,
+      senderAccountType: sendingUser.userRole
+    });
 
   }
 
-  async create(networkInput: CreateNetworkInput & { sender: string }): Promise<Network> {
+  async create(
+    networkInput: CreateNetworkInput & { sender: string, senderAccountType: ROLE }
+  ): Promise<Network> {
     const networkModel = new this.networkModel({
       sender: networkInput.sender,
       receiverEmail: networkInput.email,
       receiverPhone: networkInput.phone,
       receiverFirstName: networkInput.firstName,
       receiverLastName: networkInput.lastName,
-      receiverAccountType: networkInput.accountType
+      receiverAccountType: networkInput.accountType,
+      senderAccountType: networkInput.senderAccountType
     });
+
     await networkModel.save();
     return networkModel;
   }
@@ -100,6 +113,7 @@ export class NetworkService {
     if (filter.invitationType === INVITATION_TYPE.received) {
 
       const query: any = {
+        receiverAccountType: user.userRole,
         $or: [{ receiverPhone: user.phone }]
       };
       if (user.email) query.$or.push({ receiverEmail: user.email });
@@ -108,13 +122,27 @@ export class NetworkService {
 
     } else if (filter.invitationType === INVITATION_TYPE.sent) {
 
-      const query: any = { sender: user._id };
+      const query: any = { sender: user._id, senderAccountType: user.userRole };
       const invitations = await this.find(query) || [];
       return invitations
 
     } else return [];
   }
 
+  async deleteInvitation(user: User, networkId: string): Promise<Network> {
+
+    if (!Types.ObjectId.isValid(networkId)) {
+      throw new HttpException('Invalid network id given', HttpStatus.BAD_REQUEST);
+    }
+
+    const network = await this.delete({
+      _id: networkId,
+      sender: user._id
+    })
+    if (!network) throw new HttpException('Unable to delete', HttpStatus.BAD_REQUEST);
+
+    return network;
+  }
   find(query) {
     return this.networkModel.find(query);
   }
@@ -127,6 +155,9 @@ export class NetworkService {
   //   return `This action updates a #${id} network`;
   // }
 
+  delete(query) {
+    return this.networkModel.findOneAndDelete(query);
+  }
   remove(id: number) {
     return `This action removes a #${id} network`;
   }

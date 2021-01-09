@@ -1,8 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ROLE } from '../../user/types/user.role.enum';
 import { EmailAddressResolver, PhoneNumberResolver } from 'graphql-scalars';
-import { Schema as MongooseSchema, Document} from 'mongoose';
+import { Schema as MongooseSchema, Document } from 'mongoose';
 import { User } from '../../user/models/user.model';
 import { Sender } from '@src/network/dto/sender.dto';
 
@@ -12,8 +12,8 @@ import { Sender } from '@src/network/dto/sender.dto';
 })
 export class Network extends Document {
 
-  @Field(() => String, {name : 'networkId' , description : 'unique id of the network type'})
-  _id : MongooseSchema.Types.ObjectId
+  @Field(() => String, { name: 'networkId', description: 'unique id of the network type' })
+  _id: MongooseSchema.Types.ObjectId
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -40,8 +40,10 @@ export class Network extends Document {
   receiverLastName: string;
 
   @Prop()
-  @Field(() => ROLE, { description: 'account type of the receiver' })
   receiverAccountType: ROLE;
+
+  @Prop()
+  senderAccountType: ROLE;
 
 }
 
