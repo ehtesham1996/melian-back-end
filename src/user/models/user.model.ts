@@ -83,6 +83,11 @@ export class User extends Document {
   isPhoneVerified: boolean;
 
   @Prop({
+    default: false
+  })
+  isEmailVerified: boolean;
+
+  @Prop({
     type: ProfessionalSchema
   })
   @Field(() => Professional, { nullable: true })

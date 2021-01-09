@@ -18,6 +18,7 @@ import { ResetPasswordGuard } from '../auth/reset-password.guard';
     ])
   ],
   providers: [UserResolver,ProfessionalResolver, UserService, AuthGuard, ResetPasswordGuard, VerifyOTPGuard, VerifyPasswordResetLinkGuard],
-  controllers: [UserController]
+  controllers: [UserController],
+  exports : [UserService]
 })
 export class UserModule {}

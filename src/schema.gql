@@ -3,20 +3,20 @@
 # ------------------------------------------------------
 
 input CreateNetworkInput {
-  """firstName of conectee"""
-  accountType: String!
+  """receiver account type"""
+  accountType: ROLE!
 
-  """connection email"""
-  email: String
+  """receiver email"""
+  email: EmailAddress
 
-  """firstName of conectee"""
+  """firstName of the receiver"""
   firstName: String!
 
-  """firstName of conectee"""
+  """firstName of the receiver"""
   lastName: String!
 
-  """connection phone"""
-  phone: String!
+  """receiver phone"""
+  phone: PhoneNumber!
 }
 
 input CreateSpecialityInput {
@@ -61,6 +61,16 @@ enum GENDER {
   male
 }
 
+"""Filter invitation based on sent and received type"""
+enum INVITATION_TYPE {
+  received
+  sent
+}
+
+input InvitationsFilter {
+  invitationType: INVITATION_TYPE!
+}
+
 input LoginInput {
   password: PasswordType!
   phone: PhoneNumber!
@@ -71,7 +81,6 @@ type Mutation {
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
-  createNetwork(createNetworkInput: CreateNetworkInput!): Network!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
@@ -79,6 +88,7 @@ type Mutation {
   removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
+  sendInvitation(createNetworkInput: CreateNetworkInput!): Network!
   sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
@@ -86,26 +96,26 @@ type Mutation {
 }
 
 type Network {
-  """firstName of conectee"""
-  accountType: String!
+  """unique id of the network type"""
+  networkId: String!
 
-  """whom send connection request"""
-  connectedFrom: ID!
+  """account type of the receiver"""
+  receiverAccountType: ROLE!
 
-  """connected to ID (whom one send connection request, if found)"""
-  connectedTo: ID
+  """email of the receiver"""
+  receiverEmail: EmailAddress
 
-  """connection email"""
-  email: String
+  """firstName of receiver"""
+  receiverFirstName: String!
 
-  """firstName of conectee"""
-  firstName: String!
+  """lastname of receiver"""
+  receiverLastName: String!
 
-  """firstName of conectee"""
-  lastName: String!
+  """phone number of the receiver"""
+  receiverPhone: PhoneNumber!
 
-  """connection phone"""
-  phone: String!
+  """person who sent the invitation"""
+  sender: Sender!
 }
 
 """
@@ -132,6 +142,8 @@ input ProfessionalInput {
 }
 
 type Query {
+  """Query on invitations either sent or received"""
+  invitations(filter: InvitationsFilter!): [Network!]!
   network(id: Int!): Network!
   profile: User!
   specialities: [Speciality!]!
@@ -153,6 +165,23 @@ type ResponseTokenTemplate {
 enum ROLE {
   patient
   professional
+}
+
+type Sender {
+  """avatar of the person who sent the inviation"""
+  avatar: String!
+
+  """email of the person who sent the inviation"""
+  email: EmailAddress!
+
+  """First name of the person who sent the inviation"""
+  firstName: String!
+
+  """Last name of the person who sent the inviation"""
+  lastName: String!
+
+  """phone of the person who sent the inviation"""
+  phone: PhoneNumber!
 }
 
 type SignedUrlResponse {

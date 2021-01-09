@@ -7,8 +7,8 @@ import { User, UserDocument } from './models/user.model';
 import { sign } from 'jsonwebtoken'
 import { SignedUrlResponse } from './types/signed-url-response.type';
 import { S3 } from 'aws-sdk';
-import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
-import { SendMobileNotificationService } from './../notification/send-mobile-notification/send-mobile-notification.service';
+import { ResponseTemplate, ResponseTokenTemplate } from '../core/dto/response-template.dto';
+import { NotificationService } from '../notification/notification.service';
 import { WorkPlaces } from './models/workplaces.model';
 import { Professional } from './models/professional.model';
 import { ProfessionalInput } from './dto/professional.input';
@@ -16,7 +16,7 @@ import { ProfessionalInput } from './dto/professional.input';
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private notification: SendMobileNotificationService
+    private notification: NotificationService
   ) { }
 
   async create(createUserInput: CreateUserInput) {
@@ -155,6 +155,10 @@ export class UserService {
     return await this.userModel.findById(id);
   }
 
+  async find(query){
+    return await this.userModel.find(query);
+  }
+
   async getProfileImageUploadUrl(filename: string, filetype: string): Promise<SignedUrlResponse> {
     const s3 = new S3({
       signatureVersion: 'v4',
@@ -246,4 +250,5 @@ export class UserService {
     await user.save();
     return user.professional;
   }
+
 }

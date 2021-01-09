@@ -6,7 +6,7 @@ import { LoginInput } from './dto/login-user.input';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from './../auth/auth.guard';
 import { SignedUrlResponse } from './types/signed-url-response.type';
-import { ResponseTemplate, ResponseTokenTemplate } from './dto/response-template.response';
+import { ResponseTemplate, ResponseTokenTemplate } from '../core/dto/response-template.dto';
 import { VerifyOTPGuard } from './../auth/verify-otp.guard';
 import { WorkPlaces } from './models/workplaces.model';
 import { Professional } from './models/professional.model';

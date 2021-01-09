@@ -1,20 +1,22 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { EmailAddressResolver,PhoneNumberResolver } from 'graphql-scalars';
+import { ROLE } from '../..//user/types/user.role.enum';
 
 @InputType()
 export class CreateNetworkInput {
 
-  @Field(() => String, { description: 'firstName of conectee' })
+  @Field(() => String, { description: 'firstName of the receiver' })
   firstName: string;
 
-  @Field(() => String, { description: 'firstName of conectee' })
+  @Field(() => String, { description: 'firstName of the receiver' })
   lastName: string;
 
-  @Field(() => String, { description: 'firstName of conectee' })
-  accountType: string;
+  @Field(() => ROLE, { description: 'receiver account type' })
+  accountType: ROLE;
 
-  @Field(() => String, { description: 'connection email', nullable: true })
+  @Field(() => EmailAddressResolver, { description: 'receiver email', nullable: true })
   email: string;
 
-  @Field(() => String, { description: 'connection phone' })
+  @Field(() => PhoneNumberResolver, { description: 'receiver phone' })
   phone: string;
 }

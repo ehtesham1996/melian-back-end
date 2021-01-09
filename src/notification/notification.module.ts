@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { SendMobileNotificationService } from './send-mobile-notification/send-mobile-notification.service';
+import { NotificationService } from './notification.service';
 
 @Module({
   providers: [
-    SendMobileNotificationService
+    NotificationService
   ],
   exports: [
-    SendMobileNotificationService
+    NotificationService
   ]
 })
 export class NotificationModule {}
