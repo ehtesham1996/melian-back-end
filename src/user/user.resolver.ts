@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, Query, ResolveField, Root } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
@@ -13,6 +13,7 @@ import { Professional } from './models/professional.model';
 import { WorkPlacesInput, WorkPlaceUpdateInput } from './dto/workplaces.input';
 import { ProfessionalInput } from './dto/professional.input';
 import { ResetPasswordGuard } from './../auth/reset-password.guard';
+import { ROLE } from './types/user.role.enum';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -53,9 +54,8 @@ export class UserResolver {
   }
 
   @Mutation(() => SignedUrlResponse)
-  async getSignedUrlForUpload(
-    @Args('filename') filename: string,
-      @Args('filetype') filetype: string
+  async getSignedUrlForUpload(@Args('filename') filename: string,
+    @Args('filetype') filetype: string
   ): Promise<SignedUrlResponse> {
     return await this.userService.getProfileImageUploadUrl(filename, filetype);
   }
@@ -95,6 +95,21 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   workplaces(@Context('user') user: User) {
     return user.professional.workplaces || [];
+  }
+
+  @ResolveField()
+  accountExists(@Root() user: User): boolean {
+    console.log('Resolving account exists field');
+    if (user.userRole === ROLE.professional) {
+      console.log('User role is professional');
+      // Returning true if professional and professional credentials exists
+      return user.professional
+        ? user.professional.credential && user.professional.credentialType ? true : false
+        : false;
+    } else if (user.userRole === ROLE.patient) {
+      // Returning true if patient account exists for time being returning false
+      return false;
+    } else return false;
   }
 
 }

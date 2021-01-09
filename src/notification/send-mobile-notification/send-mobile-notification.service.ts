@@ -32,6 +32,7 @@ export class SendMobileNotificationService {
   }
 
   async sendSMSToMobile(number: string, message: string) {
+    console.log(`Sending sms to ${number}`);
     await this.setSMSTypeInSNS();
     const params = {
       Message: message,

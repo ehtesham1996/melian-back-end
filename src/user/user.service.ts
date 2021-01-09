@@ -47,8 +47,8 @@ export class UserService {
     }
   }
 
-  createToken({ _id }: User) {
-    return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
+  createToken({ _id, userRole }: User) {
+    return sign({ _id, userRole }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
   }
 
   async createTokenForOTP(user: UserDocument, userRole: string) {
@@ -64,7 +64,7 @@ export class UserService {
       await this.notification.sendSMSToMobile(user.phone, message);
     }
 
-    return sign({ _id: user._id, role: userRole }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
+    return sign({ _id: user._id, userRole }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
   }
 
   createTokenForEmailResent({ _id }: User) {
@@ -152,9 +152,7 @@ export class UserService {
   }
 
   async findById(id: Types.ObjectId) {
-    const user = await this.userModel.findById(id);
-    user.professionalAccountExist = user.professional ? true : false;
-    return user;
+    return await this.userModel.findById(id);
   }
 
   async getProfileImageUploadUrl(filename: string, filetype: string): Promise<SignedUrlResponse> {

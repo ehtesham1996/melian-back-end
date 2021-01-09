@@ -1,16 +1,16 @@
-import { ObjectType, Field, HideField, Int } from '@nestjs/graphql';
+import { ObjectType, Field, HideField } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import * as bcrypt from 'mongoose-bcrypt'
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
-import { Professional,ProfessionalSchema } from './professional.model';
+import { Professional, ProfessionalSchema } from './professional.model';
 import { ROLE } from '../types/user.role.enum';
 @ObjectType()
 @Schema({
   timestamps: true
 })
-export class User extends Document{
+export class User extends Document {
 
   @Prop({ required: true, index: true })
   @Field(() => String, { description: 'user firstName' })
@@ -63,7 +63,7 @@ export class User extends Document{
   confidentialityAcceptance: boolean
 
   @Field(() => Boolean, { nullable: true })
-  professionalAccountExist?: boolean;
+  accountExists?: boolean;
 
   @Prop()
   otp: number;

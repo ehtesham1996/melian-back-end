@@ -43,6 +43,7 @@ input CreateUserInput {
   phone: PhoneNumber!
   profileImage: URL!
   termAcceptance: Boolean!
+  userRole: ROLE!
 }
 
 """
@@ -63,6 +64,7 @@ enum GENDER {
 input LoginInput {
   password: PasswordType!
   phone: PhoneNumber!
+  userRole: ROLE!
 }
 
 type Mutation {
@@ -149,6 +151,11 @@ type ResponseTokenTemplate {
   token: String!
 }
 
+enum ROLE {
+  patient
+  professional
+}
+
 type SignedUrlResponse {
   signedRequest: String!
   url: String!
@@ -185,6 +192,7 @@ A field whose value conforms to the standard URL format as specified in RFC3986:
 scalar URL
 
 type User {
+  accountExists: Boolean
   birthDate: Date!
   confidentialityAcceptance: Boolean!
   country: String!
@@ -197,7 +205,6 @@ type User {
   lastName: String!
   phone: PhoneNumber!
   professional: Professional
-  professionalAccountExist: Boolean
   profileImage: URL!
   termAcceptance: Boolean!
 }

@@ -8,7 +8,7 @@ export class AuthGuard implements CanActivate {
 
   constructor(
     private readonly userService: UserService
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context).getContext();
@@ -31,9 +31,10 @@ export class AuthGuard implements CanActivate {
     }
 
     const token = auth.split(' ')[1];
-    try{
-      const decoded : any = await verify(token, process.env.jwt_secret || 'secret');
-      const user  = await this.userService.findById(decoded._id);
+    try {
+      const decoded: any = await verify(token, process.env.jwt_secret || 'secret');
+      const user = await this.userService.findById(decoded._id);
+      user.userRole = decoded.userRole;
       return user;
     } catch (error) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
