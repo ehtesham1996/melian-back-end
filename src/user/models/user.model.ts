@@ -5,6 +5,7 @@ import * as bcrypt from 'mongoose-bcrypt'
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
 import { Professional,ProfessionalSchema } from './professional.model';
+import { ROLE } from '../types/user.role.enum';
 @ObjectType()
 @Schema({
   timestamps: true
@@ -86,6 +87,8 @@ export class User extends Document{
   })
   @Field(() => Professional, { nullable: true })
   professional?: Professional;
+
+  userRole: ROLE;
 }
 
 export type UserDocument = User & Document & { verifyPasswordSync: any };

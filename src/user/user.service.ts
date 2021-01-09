@@ -20,9 +20,10 @@ export class UserService {
   ) { }
 
   async create(createUserInput: CreateUserInput) {
+    const { userRole } = createUserInput || {};
     const createdUser = new this.userModel(createUserInput);
     await createdUser.save();
-    const token = this.createTokenForOTP(createdUser);
+    const token = this.createTokenForOTP(createdUser, userRole);
     return {
       message: "New user successfully created",
       success: true,
@@ -31,13 +32,14 @@ export class UserService {
   }
 
   async login(LoginInput: LoginInput): Promise<ResponseTokenTemplate> {
+    const { userRole } = LoginInput || {};
     const user = await this.userModel.findOne({ phone: LoginInput.phone }).exec();
     if (!user) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
 
     const isVerified = user.verifyPasswordSync(LoginInput.password);
     if (!isVerified) throw new HttpException('Invalid phone or password', HttpStatus.UNAUTHORIZED);
 
-    const token = await this.createTokenForOTP(user);
+    const token = await this.createTokenForOTP(user, userRole);
     return {
       success: true,
       message: "success",
@@ -49,7 +51,10 @@ export class UserService {
     return sign({ _id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' }) // change secret according to env
   }
 
-  async createTokenForOTP(user: UserDocument) {
+  async createTokenForOTP(user: UserDocument, userRole: string) {
+    if (!userRole) {
+      throw new HttpException('Invalid userRole', HttpStatus.UNAUTHORIZED);
+    }
     user.otp = 123456 || Math.floor(100000 + Math.random() * 900000);
     user.otpExpiry = Math.floor(Date.now() + 60000);
     user.save();
@@ -59,7 +64,7 @@ export class UserService {
       await this.notification.sendSMSToMobile(user.phone, message);
     }
 
-    return sign({ _id: user._id }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
+    return sign({ _id: user._id, role: userRole }, process.env.JWT_SECRET_FOR_OTP || 'secret123', { expiresIn: '3m' }) // change secret according to env
   }
 
   createTokenForEmailResent({ _id }: User) {

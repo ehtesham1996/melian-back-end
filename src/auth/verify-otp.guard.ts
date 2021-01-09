@@ -34,6 +34,7 @@ export class VerifyOTPGuard implements CanActivate {
     try{
       const decoded : any = await verify(token, process.env.jwt_secret_for_otp || 'secret123');
       const user  = await this.userService.findById(decoded._id);
+      user.userRole = decoded.userRole;
       return user;
     } catch (error) {
       throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);

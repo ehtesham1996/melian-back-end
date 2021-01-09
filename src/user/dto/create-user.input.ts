@@ -2,6 +2,7 @@ import { InputType, Field } from '@nestjs/graphql';
 import { EmailAddressResolver, DateResolver, URLResolver, PhoneNumberResolver } from 'graphql-scalars';
 import { GENDER } from '../types/gender.enum';
 import { PasswordType } from '../types/password.type';
+import { ROLE } from '../types/user.role.enum';
 @InputType()
 export class CreateUserInput {
   @Field(() => String, { description: 'user firstName' })
@@ -39,4 +40,7 @@ export class CreateUserInput {
 
   @Field(() => Boolean)
   confidentialityAcceptance: boolean
+
+  @Field(() => ROLE)
+  userRole: ROLE
 }
