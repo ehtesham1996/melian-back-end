@@ -162,19 +162,19 @@ export class UserService {
   async getProfileImageUploadUrl(filename: string, filetype: string): Promise<SignedUrlResponse> {
     const s3 = new S3({
       signatureVersion: 'v4',
-      region: process.env.REGION || 'eu-west-2'
+      region: process.env.region || 'eu-west-2'
     });
 
     const s3Params = {
-      Bucket: process.env.S3_BUCKET,
+      Bucket: process.env.s3_bucket,
       Key: filename,
-      Expires: 60,
+      Expires: 600,
       ContentType: filetype,
       ACL: 'public-read'
     };
 
     const signedRequest = await s3.getSignedUrl('putObject', s3Params);
-    const url = `https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${filename}`;
+    const url = `https://s3.amazonaws.com/${process.env.s3_bucket}/${filename}`;
 
     return {
       signedRequest,

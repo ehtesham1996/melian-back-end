@@ -5,6 +5,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import * as awsServerlessExpress from 'aws-serverless-express';
 import * as express from 'express';
 import { AppModule } from './app/app.module';
+import * as uploadFile from 'express-fileupload';
 import 'apollo-server-express';
 import 'reflect-metadata';
 import 'rimraf';
@@ -18,6 +19,7 @@ const bootstrapServer = async (): Promise<Server> => {
   const expressApp = express();
   const adapter = new ExpressAdapter(expressApp);
   const app = await NestFactory.create(AppModule, adapter);
+  app.use(uploadFile());
   app.enableCors();
   await app.init();
   return awsServerlessExpress.createServer(expressApp);
