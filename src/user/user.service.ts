@@ -12,6 +12,7 @@ import { NotificationService } from '../notification/notification.service';
 import { WorkPlaces } from './models/workplaces.model';
 import { Professional } from './models/professional.model';
 import { ProfessionalInput } from './dto/professional.input';
+import { DisconnectInput } from './dto/disconnect.input';
 @Injectable()
 export class UserService {
   constructor(
@@ -251,4 +252,45 @@ export class UserService {
     return user.professional;
   }
 
+  async disconnect(disconnectInput: DisconnectInput, user: User): Promise<ResponseTemplate> {
+
+    user.connections = user.connections || [];
+    const connectedUserIndex = user.connections.findIndex(connection =>
+      connection.connectedAsType === user.userRole
+      && connection.connectedTo.toString() === disconnectInput.userId
+      && connection.connectedToType === disconnectInput.connectedToType
+    );
+
+    if (connectedUserIndex === -1) throw new HttpException(
+      'User already disconnected or bad request',
+      HttpStatus.BAD_REQUEST);
+
+
+    const connectedUserData = await this
+      .findById(Types.ObjectId(<string>user.connections[connectedUserIndex].connectedTo))
+      .select('connections');
+
+    const disconnectRequestingUserIndex = connectedUserData.connections.findIndex(connection =>
+      connection.connectedAsType === disconnectInput.connectedToType
+      && connection.connectedTo.toString() === user._id.toString()
+      && connection.connectedToType === user.userRole);
+
+
+    if (disconnectRequestingUserIndex === -1) throw new HttpException(
+      'Disconnection error occured. DS-01',
+      HttpStatus.INTERNAL_SERVER_ERROR);
+
+    connectedUserData.connections.splice(disconnectRequestingUserIndex, 1);
+    user.connections.splice(connectedUserIndex, 1);
+
+    // use transaction here in future
+    await user.save();
+    await connectedUserData.save();
+
+    return {
+      message: "Disconnected Successfully",
+      success: true
+    }
+
+  }
 }

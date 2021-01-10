@@ -61,6 +61,11 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
+input DisconnectInput {
+  connectedToType: ROLE!
+  userId: String!
+}
+
 """
 A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.
 """
@@ -99,6 +104,7 @@ type Mutation {
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
   deleteInvitation(networkId: String!): Network!
+  disconnectConnection(disconnectInput: DisconnectInput!): ResponseTemplate!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
@@ -237,6 +243,9 @@ type User {
   professional: Professional
   profileImage: URL!
   termAcceptance: Boolean!
+
+  """unique id of the user"""
+  userId: String!
 }
 
 type WorkPlaces {
