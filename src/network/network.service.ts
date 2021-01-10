@@ -3,31 +3,34 @@ import { UserService } from '../user/user.service';
 import { CreateNetworkInput } from './dto/create-network.input';
 import { Network, NetworkDocument } from './model/network.model';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from '../user/models/user.model';
+import { User, UserDocument } from '../user/models/user.model';
 import { Model, Types } from 'mongoose';
 import { NotificationService } from '../notification/notification.service';
-import { InvitationsFilter } from './dto/invitation-filter.dto';
+import { InvitationsFilter } from './dto/invitation-filter.input';
 import { INVITATION_TYPE } from './types/invitaions-type.enum';
 import { ROLE } from '../user/types/user.role.enum';
-import { ResponseTemplate } from '../core/dto/response-template.dto';
-// import { UpdateNetworkInput } from './dto/update-network.input';
+import { AcceptRejectInvitation } from './dto/accept-reject-invitation.input';
+import { INVITATION_ACTION } from './types/invitations-action.enum';
 
 @Injectable()
 export class NetworkService {
 
   constructor(
     @InjectModel(Network.name) private networkModel: Model<NetworkDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService
   ) { }
 
   async sendInvite(sendingUser: User, createNetworkInput: CreateNetworkInput): Promise<Network> {
 
+    // check either sending user already have connection with this user...
+    if (sendingUser.connections && sendingUser.connections.length > 0) {
+
+    }
     const users = await this.userService.find({
       $or: [{ phone: createNetworkInput.phone }, { email: createNetworkInput.email }]
     });
-
-    console.log('users are', users);
 
     const alreadySent = await this.findOne({
       sender: sendingUser._id,
@@ -39,8 +42,8 @@ export class NetworkService {
           receiverEmail: createNetworkInput.email
         }
       ]
-    }).count();
-    console.log(alreadySent);
+    }).estimatedDocumentCount();
+
     if (alreadySent) throw new HttpException(
       'Your invitation to this user is already pending',
       HttpStatus.CONFLICT
@@ -68,6 +71,18 @@ export class NetworkService {
     // one receiver account exists against phone and email
     if (users.length == 1) {
       const user = users[0];
+
+      // if there is already connection exist b.w two users...
+      const alreadyConnected = sendingUser.connections && sendingUser.connections.find(
+        connection =>
+          connection.connectedTo.toString() === user._id.toString()
+          && connection.connectedAsType === sendingUser.userRole
+          && connection.connectedToType === createNetworkInput.accountType
+      );
+      if (alreadyConnected) throw new HttpException(
+        'Sorry you are already connected to this user', HttpStatus.CONFLICT
+      );
+      
       createNetworkInput.phone = user.phone;
       createNetworkInput.email = user.email;
       return await this.create({
@@ -143,6 +158,42 @@ export class NetworkService {
 
     return network;
   }
+
+  async acceptRejectInvitation(user: User, input: AcceptRejectInvitation): Promise<Network> {
+
+    const network = await this.findById(input.networkId);
+    if (!network) throw new HttpException('Invalid network or action already done', HttpStatus.BAD_REQUEST);
+
+    if (input.action === INVITATION_ACTION.reject) {
+      await network.remove();
+      return network;
+    } else if (input.action === INVITATION_ACTION.accept) {
+
+      // First appending to current connection
+      user.connections = user.connections || [];
+      user.connections.push({
+        connectedAsType: user.userRole,
+        connectedTo: network.sender,
+        connectedToType: network.senderAccountType
+      });
+
+      // Now Appending it to sender connection
+      const senderDetail = await this.userService.findById(Types.ObjectId(<string>network.sender));
+      senderDetail.connections = senderDetail.connections || [];
+      senderDetail.connections.push({
+        connectedAsType: network.senderAccountType,
+        connectedToType: user.userRole,
+        connectedTo: user._id
+      });
+
+      // Comment below code if you fix transactions
+      await user.save();
+      await senderDetail.save();
+      await network.remove();
+      return network;
+    } else throw new HttpException('Invalid Action type selected', HttpStatus.BAD_REQUEST);
+  }
+
   find(query) {
     return this.networkModel.find(query);
   }
@@ -151,14 +202,12 @@ export class NetworkService {
     return this.networkModel.findOne(query);
   }
 
-  // update(id: number, updateNetworkInput: UpdateNetworkInput) {
-  //   return `This action updates a #${id} network`;
-  // }
+  findById(id) {
+    return this.networkModel.findById(id)
+  }
 
   delete(query) {
     return this.networkModel.findOneAndDelete(query);
   }
-  remove(id: number) {
-    return `This action removes a #${id} network`;
-  }
+
 }

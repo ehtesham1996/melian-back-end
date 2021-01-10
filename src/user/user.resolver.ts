@@ -14,6 +14,8 @@ import { WorkPlacesInput, WorkPlaceUpdateInput } from './dto/workplaces.input';
 import { ProfessionalInput } from './dto/professional.input';
 import { ResetPasswordGuard } from './../auth/reset-password.guard';
 import { ROLE } from './types/user.role.enum';
+import { Connection } from './models/connection.model';
+import { DisconnectInput } from './dto/disconnect.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -91,6 +93,13 @@ export class UserResolver {
     return user;
   }
 
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(AuthGuard)
+  async disconnectConnection(@Args('disconnectInput') disconnectInput: DisconnectInput,
+    @Context('user') user: User) {
+    return await this.userService.disconnect(disconnectInput, user);
+  }
+
   @Query(() => [WorkPlaces])
   @UseGuards(AuthGuard)
   workplaces(@Context('user') user: User) {
@@ -110,6 +119,15 @@ export class UserResolver {
       // Returning true if patient account exists for time being returning false
       return false;
     } else return false;
+  }
+
+  @ResolveField()
+  async connections(@Root() user: User): Promise<Connection[]> {
+    user.connections = (user.connections
+      && user.connections.filter(connection => connection.connectedAsType === user.userRole)) || [];
+
+    await user.populate('connections.connectedTo').execPopulate();
+    return user.connections;
   }
 
 }

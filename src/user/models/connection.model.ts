@@ -1,26 +1,27 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Schema as MongooseSchema } from 'mongoose';
+import { userInfo } from 'os';
 import { ROLE } from '../types/user.role.enum';
+import { User } from './user.model';
 
 @ObjectType()
 @Schema()
 export class Connection {
 
-    @Prop({
-        unique: true,
-        sparse: true
-    })
-    @Field(() => String, { nullable: true })
-    _id?: Types.ObjectId;
+  @Prop({
+    type : MongooseSchema.Types.ObjectId,
+    ref : 'User'
+  })
+  @Field(() => User)
+  connectedTo?: string | User;
 
-    @Prop()
-    @Field(() => String, { nullable: true })
-    connectedTo?: string;
+  @Prop()
+  @Field(() => ROLE)
+  connectedToType?: ROLE;
 
-    @Prop()
-    @Field(() => ROLE, { nullable: true })
-    connectedAs?: ROLE;
+  @Prop()
+  connectedAsType?: ROLE;
 }
 
 export const ConnectionSchema = SchemaFactory.createForClass(Connection);

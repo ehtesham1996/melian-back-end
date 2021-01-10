@@ -1,16 +1,20 @@
 import { ObjectType, Field, HideField } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import * as bcrypt from 'mongoose-bcrypt'
 import { GENDER } from '../types/gender.enum';
 import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars';
 import { Professional, ProfessionalSchema } from './professional.model';
 import { ROLE } from '../types/user.role.enum';
+import { Connection, ConnectionSchema } from './connection.model';
 @ObjectType()
 @Schema({
   timestamps: true
 })
 export class User extends Document {
+
+  @Field(() => String, {name:'userId' , description : 'unique id of the user'})
+  _id : string;
 
   @Prop({ required: true, index: true })
   @Field(() => String, { description: 'user firstName' })
@@ -92,6 +96,13 @@ export class User extends Document {
   })
   @Field(() => Professional, { nullable: true })
   professional?: Professional;
+
+  @Prop({
+    type: [ConnectionSchema],
+    default: []
+  })
+  @Field(() => [Connection], { nullable: true })
+  connections?: Connection[];
 
   userRole: ROLE;
 }
