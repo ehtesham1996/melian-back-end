@@ -2,6 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AcceptRejectInvitation {
+  action: INVITATION_ACTION!
+  networkId: String!
+}
+
+type Connection {
+  connectedTo: User!
+  connectedToType: ROLE!
+}
+
 input CreateNetworkInput {
   """receiver account type"""
   accountType: ROLE!
@@ -61,6 +71,12 @@ enum GENDER {
   male
 }
 
+"""Either accept or reject an invitation"""
+enum INVITATION_ACTION {
+  accept
+  reject
+}
+
 """Filter invitation based on sent and received type"""
 enum INVITATION_TYPE {
   received
@@ -78,6 +94,7 @@ input LoginInput {
 }
 
 type Mutation {
+  acceptRejectInvitation(acceptRejectInvitationInput: AcceptRejectInvitation!): Network!
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
@@ -85,7 +102,6 @@ type Mutation {
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
-  removeNetwork(id: Int!): Network!
   removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
@@ -99,6 +115,9 @@ type Mutation {
 type Network {
   """unique id of the network type"""
   networkId: String!
+
+  """Role of receiver"""
+  receiverAccountType: ROLE!
 
   """email of the receiver"""
   receiverEmail: EmailAddress
@@ -114,6 +133,9 @@ type Network {
 
   """person who sent the invitation"""
   sender: Sender!
+
+  """Role of sender"""
+  senderAccountType: ROLE!
 }
 
 """
@@ -142,7 +164,6 @@ input ProfessionalInput {
 type Query {
   """Query on invitations either sent or received"""
   invitations(filter: InvitationsFilter!): [Network!]!
-  network(id: Int!): Network!
   profile: User!
   specialities: [Speciality!]!
   specialityById(id: ID!): Speciality!
@@ -203,6 +224,7 @@ type User {
   accountExists: Boolean
   birthDate: Date!
   confidentialityAcceptance: Boolean!
+  connections: [Connection!]
   country: String!
   email: String!
 

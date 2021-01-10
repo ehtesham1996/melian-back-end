@@ -1,13 +1,13 @@
-import { Resolver, Query, Mutation, Args, Int, Context, ResolveField, Root } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context, ResolveField, Root } from '@nestjs/graphql';
 import { Network } from './model/network.model';
 import { CreateNetworkInput } from './dto/create-network.input';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { User } from '../user/models/user.model';
 import { NetworkService } from './network.service';
-import { InvitationsFilter } from './dto/invitation-filter.dto';
+import { InvitationsFilter } from './dto/invitation-filter.input';
 import { Sender } from '../network/dto/sender.dto';
-import { ResponseTemplate } from '../core/dto/response-template.dto';
+import { AcceptRejectInvitation } from './dto/accept-reject-invitation.input';
 
 @Resolver(() => Network)
 export class NetworkResolver {
@@ -49,18 +49,10 @@ export class NetworkResolver {
     return await this.networkService.deleteInvitation(user, networkId);
   }
 
-  @Query(() => Network, { name: 'network' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.networkService.findOne(id);
-  }
-
-  // @Mutation(() => Network)
-  // updateNetwork(@Args('updateNetworkInput') updateNetworkInput: UpdateNetworkInput) {
-  //   return this.networkService.update(updateNetworkInput.id, updateNetworkInput);
-  // }
-
   @Mutation(() => Network)
-  removeNetwork(@Args('id', { type: () => Int }) id: number) {
-    return this.networkService.remove(id);
+  @UseGuards(AuthGuard)
+  async acceptRejectInvitation(@Context('user') user: User,
+    @Args('acceptRejectInvitationInput') input: AcceptRejectInvitation ): Promise<Network> {
+    return await this.networkService.acceptRejectInvitation(user, input);
   }
 }

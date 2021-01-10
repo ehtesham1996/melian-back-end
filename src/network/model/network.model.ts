@@ -40,9 +40,11 @@ export class Network extends Document {
   receiverLastName: string;
 
   @Prop()
+  @Field(() => ROLE, { description: 'Role of receiver' })
   receiverAccountType: ROLE;
 
   @Prop()
+  @Field(() => ROLE, { description: 'Role of sender' })
   senderAccountType: ROLE;
 
 }

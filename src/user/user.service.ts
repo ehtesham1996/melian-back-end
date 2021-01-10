@@ -151,11 +151,11 @@ export class UserService {
     }
   }
 
-  async findById(id: Types.ObjectId) {
-    return await this.userModel.findById(id);
+  findById(id: Types.ObjectId) {
+    return this.userModel.findById(id);
   }
 
-  async find(query){
+  async find(query) {
     return await this.userModel.find(query);
   }
 
