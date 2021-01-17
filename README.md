@@ -1,105 +1,89 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Melian Backend
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Backend repository for melain app. Melian is an online health care system. It include patients and professionals to communicate over a better channel and along with that patients careline and health history data is maintained.
 
-## Description
+### Technology Stack
+- NestJs
+- Serverless Framework
+- AWS lambda
+- API Gateway
+- GraphQL
+- MongoDB
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Getting Started
 
-## Installation
+Clone up the repository and see deployment for notes on how to deploy the project on a live system.
+For development instructions are given below.
 
-```bash
-$ npm install
-```
+### Prerequisites
 
-## Running the app
+All project pre-requisites are mentioned in package.json file. 
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Routes in application
-For the time being this application have only one route which is /register
-```bash
-# path: 
-/auth/register
-secured witg Auth token
-# body: 
- {
-   birthDate: string (YYYY/MM/DD), 
-   name: string, 
-   lastName: string, 
-   picture: string (base64 right now but later on it is s3 URL), 
-   country: string, 
-   email: string, 
-   phone: string (start with +)
- }
+Make sure you have node installed on your system.
 
 ```
-Cognito is used for authentication and autherization, each new user record created against userId from cognito.
+node -v
+```
 
-## Contributing
-For contribution in the repo:
+Also do install serverless
 
-##Fork the Project
-  - Create your Feature Branch (git checkout -b feature/AmazingFeature) (feature branch created from master)
-  - Commit your Changes (git commit -m 'Add some AmazingFeature')
-  - Push to the Branch (git push origin feature/AmazingFeature)
-  - Open a Pull Requested
-  - after approval of pull request, merge it into master, code auto deploed through AWS CI/CD pipeline.
+```
+npm install -g serverless
+```
+### Installing
+Follow the following steps
 
-## Support
+- Clone the project
+- Install dependencies via 
+    ```
+    npm install
+    ```
+- Copy the environment file
+    ```
+    cp .env.sample .env
+    ```
+- Run project in DEV mode  (skip for production or offline serverless mode)
+    ```
+    npm run start:dev
+    ```
+- Run project in Serverless mode (please do run once in dev mode to generate graphql.schema file)
+  ```
+  npm run start:sls
+  ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Running the tests
 
-## Stay in touch
+To perform unit test
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+npm test
+```
 
-## License
+###coding style fix
 
-  Nest is [MIT licensed](LICENSE).
+Fix all linting issues via
+
+```
+npm run lint
+```
+
+## Deployment
+
+Deployment information is given below
+#### Note
+    A AWS codepipline is already attached to master branch with production .env files
+
+However you can still deploy via serverless deploy command be careful and watch what you do
+
+```
+sls deploy --stage $stage
+```
+Where $stage can be default to dev (if not mentioned). Otherwise prod.
+#### Note
+    For prod deployment you need to have .env.prod file in repository
+
+## Built With
+
+* [Serverless](https://www.serverless.com/) - The framework used
+* [NestJS](https://nestjs.com/) - The rest framework
+* [GraphQL](https://graphql.org/) - Query language used with nestjs
