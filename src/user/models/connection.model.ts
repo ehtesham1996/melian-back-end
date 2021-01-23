@@ -16,11 +16,15 @@ export class Connection {
   @Field(() => User)
   connectedTo?: string | User;
 
-  @Prop()
+  @Prop(
+    {type : ROLE}
+  )
   @Field(() => ROLE)
   connectedToType?: ROLE;
 
-  @Prop()
+  @Prop(
+    {type : ROLE}
+  )
   connectedAsType?: ROLE;
 }
 

@@ -160,26 +160,41 @@ export class UserService {
     return await this.userModel.find(query);
   }
 
+  formatFilename(filename: string) : string {
+    const date = Date.now();
+    const randomString = Math.random()
+      .toString(36)
+      .substring(2, 7);
+    let cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    cleanFileName = cleanFileName.substr(0, cleanFileName.lastIndexOf("-")) + "." + cleanFileName.substr(cleanFileName.lastIndexOf("-") + 1);
+    const newFilename = `${date}-${randomString}-${cleanFileName}`;
+    return newFilename.substring(0, 60);
+  };
+
+
   async getProfileImageUploadUrl(filename: string, filetype: string): Promise<SignedUrlResponse> {
     const s3 = new S3({
       signatureVersion: 'v4',
       region: process.env.region || 'eu-west-2'
     });
 
+    const generatedFileName =  this.formatFilename(filename);
+
     const s3Params = {
       Bucket: process.env.s3_bucket,
-      Key: filename,
+      Key: generatedFileName,
       Expires: 600,
       ContentType: filetype,
       ACL: 'public-read'
     };
 
     const signedRequest = await s3.getSignedUrl('putObject', s3Params);
-    const url = `https://s3.amazonaws.com/${process.env.s3_bucket}/${filename}`;
+    const url = `https://s3.amazonaws.com/${process.env.s3_bucket}/${generatedFileName}`;
 
     return {
       signedRequest,
-      url
+      url,
+      filename : generatedFileName
     };
   }
 

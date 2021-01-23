@@ -10,7 +10,7 @@ import { NetworkModule } from '@src/network/network.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot('mongodb://localhost:27017/melian', { //process.env.db_uri ||
+    MongooseModule.forRoot( process.env.db_uri || 'mongodb://localhost:27017/melian', {
       useCreateIndex: true,
       useFindAndModify: false,
       autoIndex: true

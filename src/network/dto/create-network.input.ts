@@ -1,6 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { EmailAddressResolver,PhoneNumberResolver } from 'graphql-scalars';
-import { ROLE } from '../..//user/types/user.role.enum';
+import { ROLE } from '../../user/types/user.role.enum';
 
 @InputType()
 export class CreateNetworkInput {

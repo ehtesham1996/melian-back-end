@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context, ResolveField, Root } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context, ResolveField, Root, Parent } from '@nestjs/graphql';
 import { Network } from './model/network.model';
 import { CreateNetworkInput } from './dto/create-network.input';
 import { UseGuards } from '@nestjs/common';
@@ -22,7 +22,7 @@ export class NetworkResolver {
     return await this.networkService.sendInvite(user, createNetworkInput);
   }
 
-  @Query(() => [Network], { description: 'Query on invitations either sent or received' })
+  @Query(() => [Network], { nullable: true, description: 'Query on invitations either sent or received' })
   @UseGuards(AuthGuard)
   async invitations(@Context('user') user: User,
     @Args('filter') filter: InvitationsFilter): Promise<Network[]> {
@@ -54,5 +54,10 @@ export class NetworkResolver {
   async acceptRejectInvitation(@Context('user') user: User,
     @Args('acceptRejectInvitationInput') input: AcceptRejectInvitation ): Promise<Network> {
     return await this.networkService.acceptRejectInvitation(user, input);
+  }
+
+  @ResolveField()
+  networkId(@Parent() network: Network): string {
+    return network._id.toString();
   }
 }

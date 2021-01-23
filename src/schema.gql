@@ -115,11 +115,10 @@ type Mutation {
   sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
-  verifyOTP(otp: Float!): ResponseTokenTemplate!
+  verifyOTP(otp: Int!): ResponseTokenTemplate!
 }
 
 type Network {
-  """unique id of the network type"""
   networkId: String!
 
   """Role of receiver"""
@@ -169,7 +168,7 @@ input ProfessionalInput {
 
 type Query {
   """Query on invitations either sent or received"""
-  invitations(filter: InvitationsFilter!): [Network!]!
+  invitations(filter: InvitationsFilter!): [Network!]
   profile: User!
   specialities: [Speciality!]!
   specialityById(id: ID!): Speciality!
@@ -210,6 +209,7 @@ type Sender {
 }
 
 type SignedUrlResponse {
+  filename: String!
   signedRequest: String!
   url: String!
 }
@@ -243,8 +243,6 @@ type User {
   professional: Professional
   profileImage: URL!
   termAcceptance: Boolean!
-
-  """unique id of the user"""
   userId: String!
 }
 

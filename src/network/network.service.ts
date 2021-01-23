@@ -82,7 +82,7 @@ export class NetworkService {
       if (alreadyConnected) throw new HttpException(
         'Sorry you are already connected to this user', HttpStatus.CONFLICT
       );
-      
+
       createNetworkInput.phone = user.phone;
       createNetworkInput.email = user.email;
       return await this.create({

@@ -8,4 +8,7 @@ export class SignedUrlResponse {
 
   @Field(() => String)
   url: string;
+
+  @Field(() => String)
+  filename: string;
 }

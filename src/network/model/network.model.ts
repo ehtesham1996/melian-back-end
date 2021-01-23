@@ -13,7 +13,7 @@ import { Sender } from '@src/network/dto/sender.dto';
 export class Network extends Document {
 
   @Field(() => String, { name: 'networkId', description: 'unique id of the network type' })
-  _id: MongooseSchema.Types.ObjectId
+  _id: MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
@@ -39,11 +39,15 @@ export class Network extends Document {
   @Field(() => String, { description: 'lastname of receiver' })
   receiverLastName: string;
 
-  @Prop()
+  @Prop(
+    {type : ROLE}
+  )
   @Field(() => ROLE, { description: 'Role of receiver' })
   receiverAccountType: ROLE;
 
-  @Prop()
+  @Prop(
+    {type : ROLE}
+  )
   @Field(() => ROLE, { description: 'Role of sender' })
   senderAccountType: ROLE;
 

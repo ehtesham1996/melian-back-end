@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Context, Query, ResolveField, Root } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, Query, ResolveField, Root, Int, Parent } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { CreateUserInput } from './dto/create-user.input';
@@ -51,7 +51,7 @@ export class UserResolver {
 
   @Mutation(() => ResponseTokenTemplate)
   @UseGuards(VerifyOTPGuard)
-  async verifyOTP(@Args('otp') otp: number, @Context('user') user: User) {
+  async verifyOTP(@Args({name: 'otp',  type: () => Int}) otp: number, @Context('user') user: User) {
     return await this.userService.verifyOTP(user, otp);
   }
 
@@ -103,7 +103,7 @@ export class UserResolver {
   @Query(() => [WorkPlaces])
   @UseGuards(AuthGuard)
   workplaces(@Context('user') user: User) {
-    return user.professional.workplaces || [];
+    return user.professional?.workplaces || [];
   }
 
   @ResolveField()
@@ -128,6 +128,11 @@ export class UserResolver {
 
     await user.populate('connections.connectedTo').execPopulate();
     return user.connections;
+  }
+
+  @ResolveField()
+  userId(@Parent() user: User): string {
+    return user._id.toString();
   }
 
 }
