@@ -106,11 +106,11 @@ export class UserService {
     const message = `
         <h3>Dear Melian Customer</h3>
         We have received a request to authorize this email address for use with Melian application. If you requested this verification, please go to the following URL to confirm that you are authorized to use this email address: <br />
-        <a class="ulink" href=http://localhost:3000/user/resetPassword/${token} target="_blank" /><br />
+        <a class="ulink" href=http://localhost:3000/login/resetPassword/${token} target="_blank" /><br />
         Your request will not be processed unless you confirm the address using this URL. This link expires 24 hours after your original verification request.
     `;
     console.log(message)
-    // await this.notification.sendEmail([email], message);
+    await this.notification.sendEmail([email], message);
     return {
       success: true,
       message: "verification link successfull sent to email address"
