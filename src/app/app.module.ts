@@ -6,7 +6,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SpecialityModule } from '../speciality/speciality.module';
-import { NetworkModule } from '@src/network/network.module';
+import { AllergyModule } from '../allergy/allergy.module';
+import { NetworkModule } from '../network/network.module';
+import { AddictionModule } from '../addiction/addiction.module';
+import { PathologyModule } from '../pathology/pathology.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,7 +20,9 @@ import { NetworkModule } from '@src/network/network.module';
     }),
     GraphQLModule.forRootAsync({
       useFactory: () => {
-        const schemaModuleOptions: any = {};
+        const schemaModuleOptions: any = {
+          // mocks: true
+        };
 
         // If we are in development, we want to generate the schema.graphql
         if (process.env.ENV == 'local') {
@@ -45,6 +50,9 @@ import { NetworkModule } from '@src/network/network.module';
     }),
     UserModule,
     NetworkModule,
+    AllergyModule,
+    AddictionModule,
+    PathologyModule,
     SpecialityModule
   ],
   controllers: [AppController],

@@ -7,9 +7,47 @@ input AcceptRejectInvitation {
   networkId: String!
 }
 
+type Addiction {
+  """id"""
+  addictionId: String
+
+  """Addiction locale name"""
+  locale: String!
+
+  """Addiction Name"""
+  name: String!
+}
+
+type Allergy {
+  """id"""
+  allergyId: String
+
+  """Allergy locale name"""
+  locale: String!
+
+  """Allergy Name"""
+  name: String!
+}
+
 type Connection {
   connectedTo: User!
   connectedToType: ROLE!
+}
+
+input CreateAddictionInput {
+  """Locale Name"""
+  locale: String!
+
+  """Addiction Name"""
+  name: String!
+}
+
+input CreateAllergyInput {
+  """Locale Name"""
+  locale: String!
+
+  """Allergy Name"""
+  name: String!
 }
 
 input CreateNetworkInput {
@@ -27,6 +65,12 @@ input CreateNetworkInput {
 
   """receiver phone"""
   phone: PhoneNumber!
+}
+
+input CreatePathologyInput {
+  icdCode: String!
+  locale: String!
+  name: String!
 }
 
 input CreateSpecialityInput {
@@ -103,17 +147,26 @@ type Mutation {
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  createAddiction(createAddictionInput: CreateAddictionInput!): Addiction!
+  createAllergy(createAllergyInput: CreateAllergyInput!): Allergy!
+  createPathology(createPathologyInput: CreatePathologyInput!): Pathology!
   deleteInvitation(networkId: String!): Network!
   disconnectConnection(disconnectInput: DisconnectInput!): ResponseTemplate!
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
+  removeAddiction(id: Int!): Addiction!
+  removeAllergy(id: Int!): Allergy!
+  removePathology(id: Int!): Pathology!
   removeSpecialityType(id: ID!): Speciality!
   removeWorkplace(id: String!): ResponseTemplate!
   resendOTP: ResponseTemplate!
   sendInvitation(createNetworkInput: CreateNetworkInput!): Network!
   sendPasswordResetLink(email: String!): ResponseTemplate!
   signup(User: CreateUserInput!): ResponseTokenTemplate!
+  updateAddiction(updateAddictionInput: UpdateAddictionInput!): Addiction!
+  updateAllergy(updateAllergyInput: UpdateAllergyInput!): Allergy!
+  updatePathology(updatePathologyInput: UpdatePathologyInput!): Pathology!
   updateWorkplace(Workplace: WorkPlaceUpdateInput!): WorkPlaces!
   verifyOTP(otp: Int!): ResponseTokenTemplate!
 }
@@ -148,6 +201,17 @@ A field whose value matches the provided regular expression /^(?=.*[A-Za-z])(?=.
 """
 scalar PasswordType
 
+type Pathology {
+  """Pathology locale name"""
+  locale: String!
+
+  """Pathology Name"""
+  name: String!
+
+  """id"""
+  pathologyId: String
+}
+
 """
 A field whose value conforms to the standard E.164 format as specified in: https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234.
 """
@@ -167,8 +231,12 @@ input ProfessionalInput {
 }
 
 type Query {
+  addiction: [Addiction!]!
+  allergy: [Allergy!]!
+
   """Query on invitations either sent or received"""
   invitations(filter: InvitationsFilter!): [Network!]
+  pathology: [Pathology!]!
   profile: User!
   specialities: [Speciality!]!
   specialityById(id: ID!): Speciality!
@@ -218,6 +286,28 @@ type Speciality {
   _id: String!
 
   """speciality name"""
+  name: String!
+}
+
+input UpdateAddictionInput {
+  """Addiction Name"""
+  locale: String!
+
+  """Addiction Name"""
+  name: String!
+}
+
+input UpdateAllergyInput {
+  """Locale Name"""
+  locale: String!
+
+  """Allergy Name"""
+  name: String!
+}
+
+input UpdatePathologyInput {
+  icdCode: String!
+  locale: String!
   name: String!
 }
 
