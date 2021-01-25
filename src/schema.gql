@@ -144,6 +144,8 @@ input LoginInput {
 
 type Mutation {
   acceptRejectInvitation(acceptRejectInvitationInput: AcceptRejectInvitation!): Network!
+  addPatientCatalogInfo(string: String!): Patient!
+  addPatientDetail(patient: PatientInput!): Patient!
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
@@ -210,6 +212,19 @@ type Pathology {
 
   """id"""
   pathologyId: String
+}
+
+type Patient {
+  addictions: [String!]
+  allergies: [String!]
+  careProvider: String!
+  mainPathology: String!
+  pathologies: [String!]
+}
+
+input PatientInput {
+  careProvider: String!
+  mainPathology: String!
 }
 
 """
@@ -329,6 +344,7 @@ type User {
   gender: GENDER!
   identityDocument: String!
   lastName: String!
+  patient: Professional
   phone: PhoneNumber!
   professional: Professional
   profileImage: URL!

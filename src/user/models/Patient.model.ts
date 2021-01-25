@@ -5,17 +5,31 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 @Schema()
 export class Patient {
 
-  @Prop()
+  @Prop({
+    default: []
+  })
   @Field(() => [String], { nullable: true })
   allergies?: string[];
 
-  @Prop()
+  @Prop({
+    default: []
+  })
   @Field(() => [String], { nullable: true })
   addictions?: string[];
 
-  @Prop()
+  @Prop({
+    default: []
+  })
   @Field(() => [String], { nullable: true })
-  pathologies: string[];
+  pathologies?: string[];
+
+  @Prop()
+  @Field(() => String)
+  mainPathology: string;
+
+  @Prop()
+  @Field(() => String)
+  careProvider: string;
 }
 
 export const PatientSchema = SchemaFactory.createForClass(Patient);

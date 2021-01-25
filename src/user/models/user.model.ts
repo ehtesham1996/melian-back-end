@@ -7,6 +7,7 @@ import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars'
 import { Professional, ProfessionalSchema } from './professional.model';
 import { ROLE } from '../types/user.role.enum';
 import { Connection, ConnectionSchema } from './connection.model';
+import { Patient, PatientSchema } from './Patient.model';
 @ObjectType()
 @Schema({
   timestamps: true
@@ -96,6 +97,12 @@ export class User extends Document {
   })
   @Field(() => Professional, { nullable: true })
   professional?: Professional;
+
+  @Prop({
+    type: PatientSchema
+  })
+  @Field(() => Professional, { nullable: true })
+  patient?: Patient;
 
   @Prop({
     type: [ConnectionSchema],

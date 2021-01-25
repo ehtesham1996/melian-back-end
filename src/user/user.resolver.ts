@@ -16,6 +16,9 @@ import { ResetPasswordGuard } from './../auth/reset-password.guard';
 import { ROLE } from './types/user.role.enum';
 import { Connection } from './models/connection.model';
 import { DisconnectInput } from './dto/disconnect.input';
+import { PatientInput } from './dto/patient.input';
+import { Patient } from './models/Patient.model';
+import { PatientCatalogType } from './types/patient-catalog.type';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -84,6 +87,20 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   async addProfessionalDetail(@Args('professional') professional: ProfessionalInput, @Context('user') user: User) {
     return await this.userService.addProfessionalDetail(professional, user);
+  }
+
+  @Mutation(() => Patient)
+  @UseGuards(AuthGuard)
+  async addPatientDetail(@Args('patient') patient: PatientInput, @Context('user') user: User) {
+    // return await this.userService.addPatientDetail(patient, user);
+    return {} as Patient;
+  }
+
+  @Mutation(() => Patient)
+  @UseGuards(AuthGuard)
+  async addPatientCatalogInfo(@Args('string') patientCatalogType: PatientCatalogType, @Args('string') name: string, @Context('user') user: User) {
+    // return await this.userService.addPatientCatalogInfo(patientCatalogType, name, user);
+    return {} as Patient;
   }
 
 
