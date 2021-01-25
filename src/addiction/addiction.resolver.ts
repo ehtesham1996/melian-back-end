@@ -15,7 +15,7 @@ export class AddictionResolver {
 
   @Query(() => [Addiction], { name: 'addiction' })
   findAll() {
-    return this.addictionService.findAll();
+    // return this.addictionService.findAll();
   }
 
   // @Query(() => Addiction, { name: 'addiction' })

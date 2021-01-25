@@ -15,7 +15,7 @@ export class PathologyResolver {
 
   @Query(() => [Pathology], { name: 'pathology' })
   findAll() {
-    return this.pathologyService.findAll();
+    // return this.pathologyService.findAll();
   }
 
   // @Query(() => Pathology, { name: 'pathology' })

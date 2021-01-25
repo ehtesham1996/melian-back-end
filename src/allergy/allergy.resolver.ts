@@ -15,7 +15,7 @@ export class AllergyResolver {
 
   @Query(() => [Allergy], { name: 'allergy' })
   findAll() {
-    return this.allergyService.findAll();
+    // return this.allergyService.findAll();
   }
 
   // @Query(() => Allergy, { name: 'allergy' })

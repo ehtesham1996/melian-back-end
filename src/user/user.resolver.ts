@@ -17,7 +17,7 @@ import { ROLE } from './types/user.role.enum';
 import { Connection } from './models/connection.model';
 import { DisconnectInput } from './dto/disconnect.input';
 import { PatientInput } from './dto/patient.input';
-import { Patient } from './models/Patient.model';
+import { Patient } from './models/patient.model';
 import { PatientCatalogType } from './types/patient-catalog.type';
 
 @Resolver(() => User)

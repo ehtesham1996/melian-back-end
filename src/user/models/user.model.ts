@@ -7,7 +7,7 @@ import { DateResolver, PhoneNumberResolver, URLResolver } from 'graphql-scalars'
 import { Professional, ProfessionalSchema } from './professional.model';
 import { ROLE } from '../types/user.role.enum';
 import { Connection, ConnectionSchema } from './connection.model';
-import { Patient, PatientSchema } from './Patient.model';
+import { Patient, PatientSchema } from './patient.model';
 @ObjectType()
 @Schema({
   timestamps: true

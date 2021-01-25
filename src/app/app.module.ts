@@ -10,6 +10,7 @@ import { AllergyModule } from '../allergy/allergy.module';
 import { NetworkModule } from '../network/network.module';
 import { AddictionModule } from '../addiction/addiction.module';
 import { PathologyModule } from '../pathology/pathology.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,7 +22,8 @@ import { PathologyModule } from '../pathology/pathology.module';
     GraphQLModule.forRootAsync({
       useFactory: () => {
         const schemaModuleOptions: any = {
-          // mocks: true
+          mocks: true,
+          mockEntireSchema: false
         };
 
         // If we are in development, we want to generate the schema.graphql
