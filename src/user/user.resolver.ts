@@ -18,7 +18,8 @@ import { Connection } from './models/connection.model';
 import { DisconnectInput } from './dto/disconnect.input';
 import { PatientInput } from './dto/patient.input';
 import { Patient } from './models/patient.model';
-import { PatientCatalogType } from './types/patient-catalog.type';
+import { PatientCatalogInput } from './dto/patient-catalog.input';
+import { UpdateEmailInput, UpdatePasswordInput } from './dto/update-user.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -93,16 +94,33 @@ export class UserResolver {
   @UseGuards(AuthGuard)
   async addPatientDetail(@Args('patient') patient: PatientInput, @Context('user') user: User) {
     // return await this.userService.addPatientDetail(patient, user);
-    return {} as Patient;
+    // return {};
   }
 
   @Mutation(() => Patient)
   @UseGuards(AuthGuard)
-  async addPatientCatalogInfo(@Args('string') patientCatalogType: PatientCatalogType, @Args('string') name: string, @Context('user') user: User) {
+  async patientCatalogInfo(@Args('PatientCatalogInput') patientCatalogInput: PatientCatalogInput, @Context('user') user: User) {
     // return await this.userService.addPatientCatalogInfo(patientCatalogType, name, user);
-    return {} as Patient;
+    // return {};
   }
 
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(AuthGuard)
+  changePassword(@Args('UpdatePasswordInput') updatePassword: UpdatePasswordInput, @Context('user') user: User) {
+    // return user;
+  }
+
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(AuthGuard)
+  changeEmail(@Args('UpdateEmailInput') updateEmail: UpdateEmailInput, @Context('user') user: User) {
+    // return user;
+  }
+
+  @Mutation(() => ResponseTemplate)
+  @UseGuards(AuthGuard)
+  changePhone(@Args('phone') phone: String, @Context('user') user: User) {
+    // return user;
+  }
 
   @Query(() => User)
   @UseGuards(AuthGuard)

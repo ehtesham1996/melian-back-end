@@ -1,21 +1,24 @@
-import { CreateUserInput } from './create-user.input';
-import { InputType, PartialType } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { PasswordType } from '../types/password.type';
 
 @InputType()
-export class UpdateUserInput extends PartialType(CreateUserInput) {
+export class UpdatePasswordInput {
 
-  // @Field(() => String)
-  // id: Types.ObjectId;
+  @Field(() => PasswordType)
+  newpassword: string;
 
-  // @IsNotEmpty()
-  // @Field(() => String, { description: 'user firstName' })
-  // firstName?: string;
 
-  // @IsNotEmpty()
-  // @Field(() => String, { description: 'user firstName' })
-  // lastName?: string;
+  @Field(() => String)
+  currentPassword: string;
+}
 
-  // @IsEmail()
-  // @Field(() => String, { description: 'user firstName' })
-  // email?: string;
+@InputType()
+export class UpdateEmailInput {
+
+  @Field(() => PasswordType)
+  email: string;
+
+
+  @Field(() => String)
+  currentEmail: string;
 }
