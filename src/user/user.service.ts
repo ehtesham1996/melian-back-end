@@ -261,7 +261,18 @@ export class UserService {
     if (credentialType) user.professional.credentialType = credentialType;
 
     if (specialities && specialities.length > 0) {
-      user.professional.specialities ? user.professional.specialities.push(...specialities) : user.professional.specialities = specialities;
+      if (user.professional.specialities) {
+        let isPreExisted = false;
+        specialities.forEach(speciality => {
+          if (user.professional.specialities.includes(speciality)) {
+            isPreExisted = true;
+          }
+        });
+
+        !isPreExisted ? user.professional.specialities.push(...specialities) : null;
+      } else {
+        user.professional.specialities = specialities;
+      }
     }
     await user.save();
     return user.professional;

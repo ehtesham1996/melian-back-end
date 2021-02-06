@@ -23,10 +23,12 @@ export class Professional {
   @Field(() => [WorkPlaces], { nullable: true })
   workplaces?: WorkPlaces[];
 
-  @Prop([{
-    type: sc.Types.ObjectId, ref: Speciality.name, default: []
-  }])
-  @Field(() => [Speciality], { nullable: true })
+  // @Prop([{
+  //   type: sc.Types.ObjectId, ref: Speciality.name, default: []
+  // }])
+  // @Field(() => [Speciality], { nullable: true })
+  @Prop()
+  @Field(() => [String], { nullable: true })
   specialities?: string[]
 
 }

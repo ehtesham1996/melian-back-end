@@ -118,6 +118,7 @@ scalar EmailAddress
 enum GENDER {
   female
   male
+  other
 }
 
 """Either accept or reject an invitation"""
@@ -144,11 +145,13 @@ input LoginInput {
 
 type Mutation {
   acceptRejectInvitation(acceptRejectInvitationInput: AcceptRejectInvitation!): Network!
-  addPatientCatalogInfo(string: String!): Patient!
   addPatientDetail(patient: PatientInput!): Patient!
   addProfessionalDetail(professional: ProfessionalInput!): Professional!
   addSpecialityType(createSpecialityInput: CreateSpecialityInput!): Speciality!
   addWorkplaces(Workplace: WorkPlacesInput!): WorkPlaces!
+  changeEmail(UpdateEmailInput: UpdateEmailInput!): ResponseTemplate!
+  changePassword(UpdatePasswordInput: UpdatePasswordInput!): ResponseTemplate!
+  changePhone(phone: String!): ResponseTemplate!
   createAddiction(createAddictionInput: CreateAddictionInput!): Addiction!
   createAllergy(createAllergyInput: CreateAllergyInput!): Allergy!
   createPathology(createPathologyInput: CreatePathologyInput!): Pathology!
@@ -157,6 +160,7 @@ type Mutation {
   getSignedUrlForUpload(filename: String!, filetype: String!): SignedUrlResponse!
   login(User: LoginInput!): ResponseTokenTemplate!
   passwordReset(password: String!): ResponseTemplate!
+  patientCatalogInfo(PatientCatalogInput: PatientCatalogInput!): Patient!
   removeAddiction(id: Int!): Addiction!
   removeAllergy(id: Int!): Allergy!
   removePathology(id: Int!): Pathology!
@@ -222,6 +226,12 @@ type Patient {
   pathologies: [String!]
 }
 
+input PatientCatalogInput {
+  addictions: [String!]
+  allergies: [String!]
+  pathologies: [String!]
+}
+
 input PatientInput {
   careProvider: String!
   mainPathology: String!
@@ -235,7 +245,7 @@ scalar PhoneNumber
 type Professional {
   credential: String
   credentialType: String
-  specialities: [Speciality!]
+  specialities: [String!]
   workplaces: [WorkPlaces!]
 }
 
@@ -318,6 +328,16 @@ input UpdateAllergyInput {
 
   """Allergy Name"""
   name: String!
+}
+
+input UpdateEmailInput {
+  currentEmail: String!
+  email: PasswordType!
+}
+
+input UpdatePasswordInput {
+  currentPassword: String!
+  newpassword: PasswordType!
 }
 
 input UpdatePathologyInput {

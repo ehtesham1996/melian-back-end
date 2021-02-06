@@ -7,11 +7,10 @@ import { Model } from 'mongoose';
 export class ProfessionalResolver {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   @ResolveField()
   async specialities(@Context('user') user: User) {
-
     await user.populate('professional.specialities').execPopulate();
     return user.professional.specialities
   }
